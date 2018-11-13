@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -e
+
+files=$(find *.go)
+
+for file in "${files[@]}"; do
+  golint $file
+done
+
