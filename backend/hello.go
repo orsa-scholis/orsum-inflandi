@@ -8,7 +8,6 @@ func main() {
 	fmt.Printf("Ich bin schon fast ein ganzer Server!\n")
 }
 
-func Calc(a int) (result int) 
-{
+func Calc (a int) (result int) {
 	return a + 2
 }
