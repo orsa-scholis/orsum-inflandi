@@ -10,6 +10,7 @@ func TestTableCalculate(t *testing.T) {
 		input    int
 		expected int
 	}{
+		{0, 2},
 		{2, 4},
 		{4, 6},
 		{-1, 1},
