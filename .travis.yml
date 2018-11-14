@@ -5,4 +5,5 @@ matrix:
         - "1.10"
       script:
         - cd backend
+        - scripts/lint
         - go test
