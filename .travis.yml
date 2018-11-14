@@ -2,8 +2,7 @@ matrix:
   include:
     - language: go
       go:
-    - "1.10"
-      before_script:
-        - cd backend/
+        - "1.10"
       script:
+        - cd backend
         - go test
