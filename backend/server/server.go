@@ -8,7 +8,7 @@ import (
   "strings"
 )
 
-func StartServer() {
+func Start() {
   fmt.Println("Launching server...")
 
   ln, err := net.Listen("tcp", ":4560")
