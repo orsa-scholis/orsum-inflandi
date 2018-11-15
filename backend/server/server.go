@@ -36,5 +36,8 @@ func handleConnection(conn net.Conn) {
   message, _ := bufio.NewReader(conn).ReadString('\n')
   fmt.Print("Message Received:", string(message))
   newmessage := strings.ToUpper(message)
-  conn.Write([]byte(newmessage + "\n"))
+  _, err := conn.Write([]byte(newmessage + "\n"))
+  if nil != err {
+    fmt.Println("No writy writy")
+  }
 }
