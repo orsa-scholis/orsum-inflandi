@@ -1,5 +1,12 @@
 matrix:
   include:
+    - language: node_js
+      node_js:
+        - "9.3.0"
+      script:
+        - cd frontend
+        - yarn install
+        - yarn lint
     - sudo: false
       language: go
     # Force-enable Go modules. This will be unnecessary when Go 1.12 lands.
