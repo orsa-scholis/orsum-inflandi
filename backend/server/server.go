@@ -58,9 +58,15 @@ func handleConnection(client Client) {
 
 func CleanUp() error {
 	for clientI := 0; clientI < len(clients); clientI++ {
-		err := clients[clientI].Conn.Close()
+		var conn = clients[clientI].Conn
+
+		_, err := conn.Write([]byte("error:closed\n"))
 		if nil != err {
 			return err
+		}
+		err2 := conn.Close()
+		if nil != err2 {
+			return err2
 		}
 	}
 
