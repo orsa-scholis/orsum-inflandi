@@ -28,7 +28,6 @@ type ServerMessage struct {
 var clients []Client
 var ln net.Listener
 var legacy bool
-var running bool
 
 func Start() {
 	flag.BoolVar(&legacy, "legacy", false, "should run in legacy mode?")
@@ -142,8 +141,6 @@ func CleanUp() error {
 		}
 		fmt.Printf("Sent closing calls and closed socket of client #%v\n", clientI)
 	}
-
-	running = false
 
 	err := ln.Close()
 	if nil != err {
