@@ -27,17 +27,16 @@ func Start() {
 
 	fmt.Println("Server started listening")
 
-	defer ln.Close()
-
 	for {
 		conn, err := ln.Accept()
 
 		if nil != err {
 			fmt.Fprint(os.Stderr, "can't accept connection: ", err)
 		} else {
-			var newClient Client
-			newClient.Name = fmt.Sprintf("Client Nr. %v", len(clients))
-			newClient.Conn = conn
+			newClient := Client {
+			  Name: fmt.Sprintf("Client Nr. %v", len(clients)),
+			  Conn: conn,
+      }
 			clients = append(clients, newClient)
 			go handleConnection(newClient)
 		}
@@ -45,12 +44,12 @@ func Start() {
 }
 
 func handleConnection(client Client) {
-	var conn = client.Conn
-
-	message, _ := bufio.NewReader(conn).ReadString('\n')
+  message, _ := bufio.NewReader(client.Conn).ReadString('\n')
 	fmt.Print("Message Received:", string(message))
-	newmessage := strings.ToUpper(message)
-	_, err := conn.Write([]byte(newmessage + "\n"))
+
+	newMessage := strings.ToUpper(message)
+	_, err := client.Conn.Write([]byte(newMessage + "\n"))
+
 	if nil != err {
 		fmt.Println("No writy writy")
 	}
@@ -64,9 +63,10 @@ func CleanUp() error {
 		if nil != err {
 			return err
 		}
-		err2 := conn.Close()
-		if nil != err2 {
-			return err2
+
+		err = conn.Close()
+		if nil != err {
+			return err
 		}
 	}
 

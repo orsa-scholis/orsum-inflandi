@@ -21,11 +21,12 @@ func main() {
 }
 
 func cleanUp() {
-	err := server.CleanUp()
-	if nil != err {
+  err := server.CleanUp()
+  if nil != err {
+    fmt.Fprintf(os.Stderr, "Cannot shut down cleanly: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Println("Shutdown gracefuly")
+	fmt.Println("Shutdown gracefully")
 	os.Exit(0)
 }
