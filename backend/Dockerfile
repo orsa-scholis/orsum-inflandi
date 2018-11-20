@@ -7,4 +7,6 @@ ENV CGO_ENABLED=0
 
 RUN go install -v -i
 
+EXPOSE '4560'
+
 CMD 'backend'
