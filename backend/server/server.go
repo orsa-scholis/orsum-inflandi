@@ -28,6 +28,7 @@ type ServerMessage struct {
 var clients []Client
 var ln net.Listener
 var legacy bool
+var running bool
 
 func Start() {
 	flag.BoolVar(&legacy, "legacy", false, "should run in legacy mode?")
@@ -35,7 +36,16 @@ func Start() {
 	flag.Parse()
 
 	clients := make([]Client, 0)
-	fmt.Println("Launching server...")
+	Log(LogMessage{
+		Level:   1,
+		Message: "Launching server...",
+	})
+	if legacy {
+		Log(LogMessage{
+			Level:   1,
+			Message: "Info: legacy mode is turned on",
+		})
+	}
 
 	var err error
 	ln, err = net.Listen("tcp", ":4560")
@@ -45,12 +55,15 @@ func Start() {
 	}
 
 	fmt.Println("Server started listening")
+	running = true
 
-	for {
+	for running {
 		conn, err := ln.Accept()
 
 		if nil != err {
-			fmt.Fprint(os.Stderr, "can't accept connection: ", err)
+			if running {
+				fmt.Println("can't accept connection: ", err)
+			}
 		} else {
 			newClient := Client{
 				Name: fmt.Sprintf("Client Nr. %v", len(clients)),
@@ -115,6 +128,7 @@ func handleConnection(client Client) {
 }
 
 func CleanUp() error {
+	fmt.Printf("Sending closing calls to %v clients\n", len(clients))
 	for clientI := 0; clientI < len(clients); clientI++ {
 		var conn = clients[clientI].Conn
 
@@ -126,7 +140,10 @@ func CleanUp() error {
 		if nil != err {
 			return err
 		}
+		fmt.Printf("Sent closing calls and closed socket of client #%v\n", clientI)
 	}
+
+	running = false
 
 	err := ln.Close()
 	if nil != err {
