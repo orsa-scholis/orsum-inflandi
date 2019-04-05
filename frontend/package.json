@@ -55,7 +55,7 @@
     "electron-compile": "^6.4.3",
     "electron-devtools-installer": "^2.1.0",
     "electron-squirrel-startup": "^1.0.0",
-    "notistack": "^0.3.7",
+    "notistack": "^0.5.1",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-hot-loader": "^4.3.12",
