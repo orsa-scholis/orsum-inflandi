@@ -9,7 +9,7 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "tslint --project tsconfig.json --type-check --force"
+    "lint": "tslint --force --project ."
   },
   "keywords": [],
   "author": "lukasbischof",
@@ -50,12 +50,14 @@
     "@material-ui/core": "^3.5.1",
     "@material-ui/icons": "^3.0.1",
     "@types/electron-devtools-installer": "^2.0.2",
+    "@types/prop-types": "^15.7.0",
     "@types/react": "^16.8.12",
     "@types/react-dom": "^16.8.3",
     "electron-compile": "^6.4.3",
     "electron-devtools-installer": "^2.1.0",
     "electron-squirrel-startup": "^1.0.0",
     "notistack": "^0.5.1",
+    "prop-types": "^15.7.2",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-hot-loader": "^4.3.12",

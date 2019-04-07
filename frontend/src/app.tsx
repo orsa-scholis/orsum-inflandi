@@ -1,14 +1,12 @@
 import * as React from 'react';
-import Button from '@material-ui/core/Button';
 import { SnackbarProvider } from 'notistack';
+import LobbyScreen from './containers/LobbyScreen/LobbyScreen';
 
-export class App extends React.Component<undefined, undefined> {
+export class App extends React.Component {
   render() {
     return (
       <SnackbarProvider maxSnack={5}>
-        <Button variant='contained' color='primary'>
-          Hello World
-        </Button>
+        <LobbyScreen />
       </SnackbarProvider>
     );
   }
