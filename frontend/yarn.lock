@@ -2121,10 +2121,10 @@ editions@^2.0.2:
     errlop "^1.0.3"
     semver "^5.6.0"
 
-electron-compile@*, electron-compile@^6.4.3:
-  version "6.4.3"
-  resolved "https://registry.yarnpkg.com/electron-compile/-/electron-compile-6.4.3.tgz#54a9ec4418ab5faf77ba48f75ab5eb80156a64d4"
-  integrity sha512-xzKLcbznK+WsQmp7K0h/rNxCxAFofePYIaptuZHTZNyNzDwQxUPbJRYaSkWllKLQIur5GiAsa7Ixbr5vm8Y53A==
+electron-compile@*, electron-compile@^6.4.4:
+  version "6.4.4"
+  resolved "https://registry.yarnpkg.com/electron-compile/-/electron-compile-6.4.4.tgz#24c5bc4c937856fcc9141cf3cc7251172e0205df"
+  integrity sha512-LEOq5Tt7fAfONEyYLR0Ue1kL6/H8NAX6s9ouw4g6Azhu6onWh166fnf2O7Y3f9qkQEqYzwZl49Rd/QWxLG2AYw==
   dependencies:
     "@paulcbetts/mime-types" "^2.1.10"
     "@types/node" "^7.0.12"
