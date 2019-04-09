@@ -15,6 +15,12 @@ const theme2 = createMuiTheme({
   },
 });
 
+const theme3 = createMuiTheme({
+  typography: {
+    useNextVariants: true,
+  },
+});
+
 export class App extends React.Component {
   render() {
     return (
