@@ -1,0 +1,6 @@
+fail_on_violations: true
+
+tslint:
+  config_file: frontend/tslint.json
+golint:
+  enabled: true
