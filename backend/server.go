@@ -6,29 +6,29 @@ import (
 	"net"
 )
 
-//type ServerMessage struct {
-//	domain      string
-//	command     string
-//	param       string
-//	attachement string
-//}
+type ServerMessage struct {
+	domain      string
+	command     string
+	param       string
+	attachement string
+}
 
-type server struct {
+type Server struct {
 	verbose     bool
-	clients     []client
+	clients     []Client
 	stoppedChan chan bool
 	socket      net.Listener
 }
 
-func initServer(verbose bool) (ser server, err error) {
+func InitServer(verbose bool) (server Server, err error) {
 	socket, err := net.Listen("tcp", ":4560")
 	if nil != err {
 		return
 	}
 
-	ser = server{
+	server = Server{
 		verbose:     verbose,
-		clients:     make([]client, 0),
+		clients:     make([]Client, 0),
 		stoppedChan: make(chan bool, 1),
 		socket:      socket,
 	}
@@ -36,8 +36,8 @@ func initServer(verbose bool) (ser server, err error) {
 	return
 }
 
-func (s *server) start() {
-	logger.Info("server started listening")
+func (s *Server) Start() {
+	logger.Info("Server started listening")
 
 	for {
 		conn, err := s.socket.Accept()
@@ -45,7 +45,7 @@ func (s *server) start() {
 		if nil != err {
 			select {
 			case <-s.stoppedChan:
-				logger.Info("server is stopped, can't accept anymore connections")
+				logger.Info("Server is stopped, can't accept anymore connections")
 				return
 			default:
 				logger.Warning("can't accept connection: ", err)
@@ -57,16 +57,16 @@ func (s *server) start() {
 	}
 }
 
-func (s *server) initClientConnection(connection net.Conn) {
-	newClient := client{
-		Name: fmt.Sprintf("client Nr. %v", len(s.clients)),
+func (s *Server) initClientConnection(connection net.Conn) {
+	newClient := Client{
+		Name: fmt.Sprintf("Client Nr. %v", len(s.clients)),
 		Conn: connection,
 	}
 	s.clients = append(s.clients, newClient)
 	newClient.handleConnection()
 }
 
-func (s *server) CleanUp() error {
+func (s *Server) CleanUp() error {
 	s.stoppedChan <- true
 	logger.Infof("Sending closing calls to %v clients\n", len(s.clients))
 
