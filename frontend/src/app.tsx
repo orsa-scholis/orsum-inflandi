@@ -21,6 +21,16 @@ const theme3 = createMuiTheme({
   },
 });
 
+for (var i = 0; i <= 5; i++) {
+  for (var j = 0; j <= 5; j++) {
+    for (var z = 0; z <= 5; z++) {
+      for (var ij = 0; ij <= 5; ij++) {
+        alert(`${i} ${j} ${z} ${ij}`);
+      }
+    }
+  }
+}
+
 export class App extends React.Component {
   render() {
     return (
