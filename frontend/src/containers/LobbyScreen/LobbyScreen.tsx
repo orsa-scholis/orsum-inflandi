@@ -4,6 +4,8 @@ import { AppBar, Grid, IconButton, Toolbar, Typography, withStyles } from '@mate
 import PlusIcon from '@material-ui/icons/Add';
 import LobbyScreenStyles from './LobbyScreenStyles';
 import { withSnackbar, withSnackbarProps } from 'notistack';
+import GameList from '../../components/GameList/GameList';
+import Game from '../../models/Game/Game';
 
 interface LobbyScreenProps extends withSnackbarProps {
   classes: any;
@@ -17,6 +19,11 @@ class LobbyScreen extends React.Component<LobbyScreenProps> {
   render() {
     const { classes, enqueueSnackbar } = this.props;
 
+    const myGameList = [
+      new Game('First game'),
+      new Game('Second game'),
+    ];
+
     return (
       <Grid container spacing={16}>
         <Grid item xs={12}>
@@ -25,15 +32,15 @@ class LobbyScreen extends React.Component<LobbyScreenProps> {
               <Typography variant='h6' color='textPrimary'>
                 Lobby
               </Typography>
-              <div className={classes.grow} />
+              <div className={classes.grow}/>
               <IconButton color='inherit' onClick={() => enqueueSnackbar('I am adding a game', { variant: 'success' })}>
-                <PlusIcon />
+                <PlusIcon/>
               </IconButton>
             </Toolbar>
           </AppBar>
         </Grid>
         <Grid item xs={12}>
-          <p>A large list</p>
+          <GameList games={myGameList}/>
         </Grid>
       </Grid>
     );
