@@ -70,7 +70,7 @@
     "babel-preset-react": "^6.24.1",
     "electron-forge": "^5.2.2",
     "electron-prebuilt-compile": "3.0.6",
-    "tslint": "^5.1.0",
+    "tslint": "^5.15.0",
     "typescript": "~3.1.6"
   }
 }
