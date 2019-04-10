@@ -20,10 +20,8 @@ const GameListItem = ({ item }: { item: Game }) => {
 
 export default ({ games }: GameListProps) => {
   return (
-    <div>
-      <List>
-        {games.map(game => <GameListItem item={game}/>)}
-      </List>
-    </div>
+    <List>
+      {games.map(game => <GameListItem item={game}/>)}
+    </List>
   );
 };
