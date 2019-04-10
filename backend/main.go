@@ -17,7 +17,7 @@ func main() {
 
 	defer logger.Init("OrsumInflandiII-Backend", *verbose, false, ioutil.Discard).Close()
 
-	server, err := InitServer(*verbose)
+	server, err := initServer(*verbose)
 
 	if err != nil {
 		logger.Error(err)
@@ -27,16 +27,16 @@ func main() {
 	sigChan := make(chan os.Signal)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 	go func() {
-		server.Start()
+		server.start()
 	}()
 
-	logger.Info("Starting Server...")
+	logger.Info("Starting server...")
 
 	<-sigChan
 	cleanUp(server)
 }
 
-func cleanUp(server Server) {
+func cleanUp(server server) {
 	err := server.CleanUp()
 	if nil != err {
 		fmt.Fprintf(os.Stderr, "Cannot shut down cleanly: %v\n", err)
