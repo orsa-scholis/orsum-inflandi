@@ -6,22 +6,28 @@ import LobbyScreenStyles from './LobbyScreenStyles';
 import { withSnackbar, withSnackbarProps } from 'notistack';
 import GameList from '../../components/GameList/GameList';
 import Game from '../../models/Game/Game';
+import { History } from 'history';
 
 interface LobbyScreenProps extends withSnackbarProps {
   classes: any;
+  history: History;
 }
 
 class LobbyScreen extends React.Component<LobbyScreenProps> {
   static propTypes = {
-    classes: PropTypes.object
+    classes: PropTypes.object,
   };
+
+  gameSelected = (_game: Game) => {
+    this.props.history.push('/game/1');
+  }
 
   render() {
     const { classes, enqueueSnackbar } = this.props;
 
     const myGameList = [
-      new Game('First game'),
-      new Game('Second game'),
+      new Game('First game', 1),
+      new Game('Second game', 2),
     ];
 
     return (
@@ -40,7 +46,7 @@ class LobbyScreen extends React.Component<LobbyScreenProps> {
           </AppBar>
         </Grid>
         <Grid item xs={12}>
-          <GameList games={myGameList}/>
+          <GameList games={myGameList} onGameSelect={this.gameSelected} />
         </Grid>
       </Grid>
     );
