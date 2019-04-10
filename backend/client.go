@@ -8,22 +8,22 @@ import (
 	"strings"
 )
 
-type Client struct {
+type client struct {
 	Name string
 	Conn net.Conn
 }
 
-func (c *Client) receiveMessage() (message string) {
+func (c *client) receiveMessage() (message string) {
 	message, _ = bufio.NewReader(c.Conn).ReadString('\n')
 	return
 }
 
-func (c *Client) sendMessage(message string) error {
+func (c *client) sendMessage(message string) error {
 	_, err := c.Conn.Write([]byte(message))
 	return err
 }
 
-func (c *Client) handleConnection() {
+func (c *client) handleConnection() {
 	message := c.receiveMessage()
 
 	// TODO: Implement better check func
