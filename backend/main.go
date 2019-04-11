@@ -33,7 +33,7 @@ func main() {
 	logger.Info("Starting server...")
 
 	<-sigChan
-	cleanUp(server)
+	cleanUp(*server)
 }
 
 func cleanUp(server server) {
