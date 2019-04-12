@@ -1,23 +1,32 @@
 package main
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+)
 
-var validators = map[string]func(string) bool{
+var validators = map[string]func(string) error{
 	"require": require,
 }
 
-var validatorsWithParam = map[string]func(string, string) bool{
+var validatorsWithParam = map[string]func(string, string) error{
 	"min": min,
 }
 
-func require(toCheck string) bool {
-	return len(toCheck) > 0
+func require(toCheck string) (err error) {
+	if len(toCheck) == 0 {
+		err = fmt.Errorf("the param '%s' does not match rule required", toCheck)
+	}
+	return
 }
 
-func min(toCheck string, minL string) bool {
+func min(toCheck string, minL string) (err error) {
 	minLength, err := strconv.ParseInt(minL, 10, 16)
 	if err != nil {
-		return false
+		return
 	}
-	return len(toCheck) >= int(minLength)
+	if len(toCheck) < int(minLength) {
+		err = fmt.Errorf("the param '%v' does not match rule min:%v", toCheck, minL)
+	}
+	return
 }

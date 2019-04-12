@@ -69,43 +69,44 @@ func parseMessage(raw string) (m message, err error) {
 	return
 }
 
-func (received *message) matches(expected message) bool {
+func validateMessage(received message, expected message) (err error) {
 	if !received.receive {
-		return false
+		err = errors.New("the message needs to be received")
 	}
 	if expected.domain == "*" {
-		return true
+		return
 	}
 	if received.domain != expected.domain {
-		return false
+		err = fmt.Errorf("the domain '%v' does not match expected '%v'", received.domain, expected.domain)
 	}
 	if received.command != expected.command {
-		return false
+		err = fmt.Errorf("the command '%v' does not match expected '%v'", received.command, expected.command)
 	}
 	if received.param != expected.param && expected.param != "*" {
-		return false
+		err = fmt.Errorf("the param '%v' does not match expected '%v'", received.param, expected.param)
 	}
+
+	if err != nil {
+		return err
+	}
+
 	if expected.param[0] == '*' && len(expected.param) > 1 {
 		rules := expected.param[2:]
 		ruleList := strings.Split(rules, ",")
-		if len(ruleList) == 0 {
-			return true
-		}
-		for _, rule := range(ruleList) {
-			ruleParts := strings.Split(rule, ":")
-			if len(ruleParts) > 1 {
-				if !validatorsWithParam[rule](received.param, ruleParts[1]) {
-					return false
-				}
-			} else {
-				if !validators[rule](received.param) {
-					return false
+		if len(ruleList) > 0 {
+			ruleErrors := ""
+			for _, rule := range ruleList {
+				ruleParts := strings.Split(rule, ":")
+
+				if len(ruleParts) > 1 {
+					ruleErrors += "," + validatorsWithParam[rule](received.param, ruleParts[1]).Error()
+				} else {
+					ruleErrors += "," + validators[rule](received.param).Error()
 				}
 			}
 		}
-
 	}
-	return true
+	return
 }
 
 type client struct {
@@ -187,60 +188,76 @@ func (c *client) start() {
 	for {
 		cMessage := <-c.receiveChan
 		messageHandled := false
+		messageErrors := make([]string, 2)
 
-		if c.state == connecting && cMessage.matches(connectionConnect) {
-			c.name = cMessage.param
-			c.state = inLobby
+		stateFunctions := clientStateMessageHandlers[c.state]
+		for expMessage, messageFunc := range stateFunctions {
 
-			c.sendChan <- message{
-				receive: false,
-				domain:  "success",
-				command: "accepted",
-				param:   "",
+			if validateMessage(cMessage, expMessage) == nil {
+				messageFunc(c, cMessage)
+
+				messageHandled = true
+				break
 			}
-
-			messageHandled = true
 		}
-
-		if c.state == inLobby && cMessage.matches(infoRequestGames) {
-			games := c.server.getGamesAsString()
-
-			c.sendChan <- message{
-				receive: false,
-				domain:  "success",
-				command: "requested",
-				param:   games,
-			}
-
-			messageHandled = true
-		}
-
-		if c.state == inLobby && cMessage.matches(serverNewGame) {
-			success := c.server.openGame(cMessage.param, *c)
-
-			if success {
-				c.sendChan <- message{
-					receive: false,
-					domain:  "success",
-					command: "created",
-				}
-			} else {
-				c.sendChan <- message{
-					receive: false,
-					domain:  "error",
-					command: "newGame",
-					param:   "game name not unique",
-				}
-			}
-
-			messageHandled = true
-		}
-
 
 		if !messageHandled {
-			logger.Warning("unhandled message: '%s'", cMessage)
+			logger.Warningf("unhandled message: '%s', \nerrors: '%v+'\nstate: '%s'", cMessage.String(), messageErrors, c.state)
 		}
 	}
+}
+
+func connectionConnectHandler(c *client, recMessage message) {
+	c.name = recMessage.param
+	c.state = inLobby
+
+	c.sendChan <- message{
+		receive: false,
+		domain:  "success",
+		command: "accepted",
+		param:   "",
+	}
+}
+
+func infoRequestGamesHandler(c *client, _ message) {
+	games := c.server.getGamesAsString()
+
+	c.sendChan <- message{
+		receive: false,
+		domain:  "success",
+		command: "requested",
+		param:   games,
+	}
+}
+
+func serverNewGameHandlder(c *client, recMessage message) {
+	success := c.server.openGame(recMessage.param, *c)
+
+	if success {
+		c.sendChan <- message{
+			receive: false,
+			domain:  "success",
+			command: "created",
+			param: "1",
+		}
+	} else {
+		c.sendChan <- message{
+			receive: false,
+			domain:  "error",
+			command: "newGame",
+			param:   "game name not unique",
+		}
+	}
+}
+
+var clientStateMessageHandlers = map[clientState]map[message]func(*client, message){
+	connecting: {
+		connectionConnect: connectionConnectHandler,
+	},
+	inLobby: {
+		infoRequestGames: infoRequestGamesHandler,
+		serverNewGame: serverNewGameHandlder,
+	},
 }
 
 var connectionConnect = message{

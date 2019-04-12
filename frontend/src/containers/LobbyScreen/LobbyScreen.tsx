@@ -6,7 +6,6 @@ import LobbyScreenStyles from './LobbyScreenStyles';
 import { withSnackbar, withSnackbarProps } from 'notistack';
 import GameList from '../../components/GameList/GameList';
 import Game from '../../models/Game/Game';
-import {Connection} from '../../connection/Connection';
 
 interface LobbyScreenProps extends withSnackbarProps {
   classes: any;
@@ -19,9 +18,6 @@ class LobbyScreen extends React.Component<LobbyScreenProps> {
 
   render() {
     const { classes, enqueueSnackbar } = this.props;
-    window.conn = new Connection('localhost', 4560, (err) => {
-      console.error(err);
-    });
 
     const myGameList = [
       new Game('First game'),
