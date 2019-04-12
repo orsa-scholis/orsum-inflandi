@@ -47,12 +47,6 @@
     }
   },
   "dependencies": {
-    "@material-ui/core": "^3.5.1",
-    "@material-ui/icons": "^3.0.1",
-    "@types/electron-devtools-installer": "^2.0.2",
-    "@types/prop-types": "^15.7.0",
-    "@types/react": "^16.8.12",
-    "@types/react-dom": "^16.8.3",
     "electron-compile": "^6.4.3",
     "electron-devtools-installer": "^2.1.0",
     "electron-squirrel-startup": "^1.0.0",
@@ -61,10 +55,19 @@
     "react": "^16.8.6",
     "react-dom": "^16.6.3",
     "react-hot-loader": "^4.3.12",
+    "react-router-dom": "^5.0.0",
     "tslib": "^1.4.0",
     "typeface-roboto": "^0.0.54"
   },
   "devDependencies": {
+    "@material-ui/core": "^3.5.1",
+    "@material-ui/icons": "^3.0.1",
+    "@types/electron-devtools-installer": "^2.0.2",
+    "@types/prop-types": "^15.7.0",
+    "@types/react": "^16.8.12",
+    "@types/react-dom": "^16.8.3",
+    "@types/react-router": "^4.4.5",
+    "@types/react-router-dom": "^4.3.1",
     "babel-plugin-transform-async-to-generator": "6.24.1",
     "babel-preset-env": "1.7.0",
     "babel-preset-react": "6.24.1",

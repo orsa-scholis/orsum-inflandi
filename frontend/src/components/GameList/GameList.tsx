@@ -5,11 +5,12 @@ import Game from '../../models/Game/Game';
 
 interface GameListProps {
   games: Game[];
+  onGameSelect: (game: Game) => void;
 }
 
-const GameListItem = ({ item }: { item: Game }) => {
+const GameListItem = ({ item, onClick }: { item: Game, onClick?: () => void }) => {
   return (
-    <ListItem button>
+    <ListItem onClick={onClick} button>
       <ListItemIcon>
         <GameIcon/>
       </ListItemIcon>
@@ -18,10 +19,12 @@ const GameListItem = ({ item }: { item: Game }) => {
   );
 };
 
-export default ({ games }: GameListProps) => {
+export default ({ games, onGameSelect }: GameListProps) => {
   return (
     <List>
-      {games.map(game => <GameListItem item={game}/>)}
+      {games.map(game => (
+        <GameListItem key={game.id} item={game} onClick={() => onGameSelect(game)}/>
+      ))}
     </List>
   );
 };
