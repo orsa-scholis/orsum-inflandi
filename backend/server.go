@@ -10,23 +10,24 @@ import (
 //	domain      string
 //	command     string
 //	param       string
-//	attachement string
+//	attachment string
 //}
 
 type server struct {
 	verbose     bool
 	clients     []client
+	games       []game
 	stoppedChan chan bool
 	socket      net.Listener
 }
 
-func initServer(verbose bool) (ser server, err error) {
+func initServer(verbose bool) (ser *server, err error) {
 	socket, err := net.Listen("tcp", ":4560")
 	if nil != err {
 		return
 	}
 
-	ser = server{
+	ser = &server{
 		verbose:     verbose,
 		clients:     make([]client, 0),
 		stoppedChan: make(chan bool, 1),
@@ -58,12 +59,31 @@ func (s *server) start() {
 }
 
 func (s *server) initClientConnection(connection net.Conn) {
-	newClient := client{
-		Name: fmt.Sprintf("client Nr. %v", len(s.clients)),
-		Conn: connection,
+	newClient := initClient(fmt.Sprintf("Client #%v", len(s.clients)), connection)
+	s.clients = append(s.clients, *newClient)
+	newClient.start()
+}
+
+func (s *server) getGamesAsString() (list string) {
+	for _, g := range s.games {
+		list = list + g.name + ","
 	}
-	s.clients = append(s.clients, newClient)
-	newClient.handleConnection()
+	return
+}
+
+func (s *server) openGame(name string, clientOne client) bool {
+	for _, g := range s.games {
+		if g.name == name {
+			return false
+		}
+	}
+	s.games = append(s.games, game{
+		name:      name,
+		playerOne: clientOne,
+		turn:      1,
+	})
+
+	return true
 }
 
 func (s *server) CleanUp() error {
@@ -71,11 +91,11 @@ func (s *server) CleanUp() error {
 	logger.Infof("Sending closing calls to %v clients\n", len(s.clients))
 
 	for i, client := range s.clients {
-		_, err := client.Conn.Write([]byte("error:closed\n"))
+		_, err := client.conn.Write([]byte("connection:closed\n"))
 		if err != nil {
 			return err
 		}
-		err = client.Conn.Close()
+		err = client.conn.Close()
 		if err != nil {
 			return err
 		}
