@@ -74,6 +74,6 @@
     "electron-forge": "5.2.2",
     "electron-prebuilt-compile": "3.0.6",
     "tslint": "5.11.0",
-    "typescript": "3.1.6"
+    "typescript": "3.4.3"
   }
 }
