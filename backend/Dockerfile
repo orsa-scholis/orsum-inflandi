@@ -1,4 +1,4 @@
-FROM golang:1.11 AS building-stage
+FROM golang:1.12 AS building-stage
 
 WORKDIR /go/src/github.com/orsa-scholis/orsum-inflandi-II/backend
 
