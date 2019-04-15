@@ -2124,15 +2124,15 @@ electron-packager@^11.0.0:
     semver "^5.3.0"
     yargs-parser "^9.0.2"
 
-electron-prebuilt-compile@3.0.6:
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/electron-prebuilt-compile/-/electron-prebuilt-compile-3.0.6.tgz#b126f4f36a17f386bd733f3cf8cf2824506f565a"
+electron-prebuilt-compile@3.0.13:
+  version "3.0.13"
+  resolved "https://registry.yarnpkg.com/electron-prebuilt-compile/-/electron-prebuilt-compile-3.0.13.tgz#3ea17355daad8e593d51f0b73967c42f7df9353d"
   dependencies:
     babel-plugin-array-includes "^2.0.3"
     babel-plugin-transform-async-to-generator "^6.24.1"
     babel-preset-es2016-node5 "^1.1.2"
     babel-preset-react "^6.24.1"
-    electron "3.0.6"
+    electron "3.0.13"
     electron-compile "*"
     electron-compilers "*"
     yargs "^6.6.0"
@@ -2198,9 +2198,9 @@ electron-wix-msi@^1.3.0:
     lodash "^4.17.4"
     uuid "^3.1.0"
 
-electron@3.0.6:
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-3.0.6.tgz#2d7b4ed521e90c69d83ffe5696db173b0e7b2473"
+electron@3.0.13:
+  version "3.0.13"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-3.0.13.tgz#7b065a3d130c6b6379dc78d49515e03f392c1303"
   dependencies:
     "@types/node" "^8.0.24"
     electron-download "^4.1.0"
