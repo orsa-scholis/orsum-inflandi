@@ -3,5 +3,9 @@
     "config:base"
   ],
   "schedule": ["every weekend"],
-  "prHourlyLimit": 1
+  "prHourlyLimit": 1,
+  "labels": ["dependencies"],
+  "vulnerabilityAlerts": {
+    "labels": ["security"]
+  }
 }
