@@ -69,21 +69,30 @@ func parseMessage(raw string) (m message, err error) {
 	return
 }
 
+type messageValidationError struct {
+	err            string
+	returnToClient bool
+}
+
+func (messageErr *messageValidationError) Error() string {
+	return messageErr.err
+}
+
 func validateMessage(received message, expected message) (err error) {
 	if !received.receive {
-		err = errors.New("the message needs to be received")
+		err = &messageValidationError{err: "the message needs to be received"}
 	}
 	if expected.domain == "*" {
 		return
 	}
 	if received.domain != expected.domain {
-		err = fmt.Errorf("the domain '%v' does not match expected '%v'", received.domain, expected.domain)
+		err = &messageValidationError{err: fmt.Sprintf("the domain '%v' does not match expected '%v'", received.domain, expected.domain)}
 	}
 	if received.command != expected.command {
-		err = fmt.Errorf("the command '%v' does not match expected '%v'", received.command, expected.command)
+		err = &messageValidationError{err: fmt.Sprintf("the command '%v' does not match expected '%v'", received.command, expected.command)}
 	}
-	if received.param != expected.param && expected.param != "*" {
-		err = fmt.Errorf("the param '%v' does not match expected '%v'", received.param, expected.param)
+	if received.param != expected.param && expected.param[0] != '*' {
+		err = &messageValidationError{err: fmt.Sprintf("the param '%v' does not match expected '%v'", received.param, expected.param)}
 	}
 
 	if err != nil {
@@ -96,13 +105,26 @@ func validateMessage(received message, expected message) (err error) {
 		if len(ruleList) > 0 {
 			ruleErrors := ""
 			for _, rule := range ruleList {
-				ruleParts := strings.Split(rule, ":")
+				ruleParts := strings.Split(rule, ";")
 
+				var ruleError error
 				if len(ruleParts) > 1 {
-					ruleErrors += "," + validatorsWithParam[rule](received.param, ruleParts[1]).Error()
+					logger.Infof("executing param checker '%s' with attr '%v' and param '%s'", ruleParts[0], ruleParts[1], received.param)
+					ruleError = validatorsWithParam[ruleParts[0]](received.param, ruleParts[1])
 				} else {
-					ruleErrors += "," + validators[rule](received.param).Error()
+					logger.Infof("executing param checker '%s' with param '%s'", ruleParts[0], received.param)
+					ruleError = validators[rule](received.param)
 				}
+
+				if ruleError != nil {
+					logger.Infof("the param '%s' does not match rule '%s'", received.param, rule)
+					ruleErrors += rule + ","
+				}
+			}
+
+			if ruleErrors != "" {
+				fullErrorMessage := fmt.Sprintf("%v", ruleErrors)
+				return &messageValidationError{err: fullErrorMessage[:len(fullErrorMessage)-1], returnToClient: true}
 			}
 		}
 	}
@@ -188,21 +210,32 @@ func (c *client) start() {
 	for {
 		cMessage := <-c.receiveChan
 		messageHandled := false
-		messageErrors := make([]string, 2)
+		messageErrors := make([]string, 0)
 
 		stateFunctions := clientStateMessageHandlers[c.state]
 		for expMessage, messageFunc := range stateFunctions {
 
-			if validateMessage(cMessage, expMessage) == nil {
+			valid := validateMessage(cMessage, expMessage)
+			if valid == nil {
 				messageFunc(c, cMessage)
 
 				messageHandled = true
 				break
+			} else {
+				if err, ok := valid.(*messageValidationError); ok && err.returnToClient {
+					messageErrors = append(messageErrors, valid.Error())
+				}
 			}
 		}
 
 		if !messageHandled {
 			logger.Warningf("unhandled message: '%s', \nerrors: '%v+'\nstate: '%s'", cMessage.String(), messageErrors, c.state)
+			c.sendChan <- message{
+				receive: false,
+				domain:  "error",
+				command: cMessage.command,
+				param:   strings.Join(messageErrors, ", "),
+			}
 		}
 	}
 }
@@ -238,7 +271,7 @@ func serverNewGameHandlder(c *client, recMessage message) {
 			receive: false,
 			domain:  "success",
 			command: "created",
-			param: "1",
+			param:   "",
 		}
 	} else {
 		c.sendChan <- message{
@@ -250,13 +283,18 @@ func serverNewGameHandlder(c *client, recMessage message) {
 	}
 }
 
+func gameJoinHandler(c *client, recMessage message) {
+
+}
+
 var clientStateMessageHandlers = map[clientState]map[message]func(*client, message){
 	connecting: {
 		connectionConnect: connectionConnectHandler,
 	},
 	inLobby: {
 		infoRequestGames: infoRequestGamesHandler,
-		serverNewGame: serverNewGameHandlder,
+		serverNewGame:    serverNewGameHandlder,
+		gameJoin:         gameJoinHandler,
 	},
 }
 
@@ -278,5 +316,12 @@ var serverNewGame = message{
 	receive: true,
 	domain:  "server",
 	command: "newGame",
-	param:   "*|required,min:3,max:5",
+	param:   "*|required,min;3,max;5",
+}
+
+var gameJoin = message{
+	receive: true,
+	domain:  "game",
+	command: "join",
+	param:   "*|required,int",
 }
