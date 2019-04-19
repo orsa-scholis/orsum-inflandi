@@ -2,5 +2,10 @@
   "extends": [
     "config:base"
   ],
-  "schedule": ["every weekend"]
+  "schedule": ["every weekend"],
+  "prHourlyLimit": 1,
+  "labels": ["dependencies"],
+  "vulnerabilityAlerts": {
+    "labels": ["security"]
+  }
 }
