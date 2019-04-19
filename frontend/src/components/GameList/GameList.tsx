@@ -10,7 +10,7 @@ interface GameListProps {
 
 const GameListItem = ({ item, onClick }: { item: Game, onClick?: () => void }) => {
   return (
-    <ListItem onClick={onClick} button>
+    <ListItem onClick={onClick} key={item.id} button>
       <ListItemIcon>
         <GameIcon/>
       </ListItemIcon>
