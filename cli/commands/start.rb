@@ -43,7 +43,7 @@ module OrsumInflandi
 
       def start_backend(directory)
         build_backend(directory) unless backend_image_exists?
-        execute_command(%w[docker run --rm -p 4560:4560 orsa-scholis/orsum-inflandi --verbose], &method(:backend_log))
+        execute_command(%W[docker run --rm -p 4560:4560 #{BACKEND_IMAGE_NAME} --verbose], &method(:backend_log))
       end
 
       def start_frontend
