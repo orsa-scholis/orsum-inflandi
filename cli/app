@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'thor'
+require 'colorize'
+
+module OrsumInflandi
+  module CLI
+    class App < Thor
+      package_name 'orsum-inflandi'
+
+      desc 'start', 'Start the app or a part of it'
+      option :backend, type: :boolean, default: true
+      option :frontend, type: :boolean, default: true
+      option :force_build, type: :boolean
+
+      def start
+        require_relative 'commands/start'
+        Commands::Start.new(options.dup).run
+      end
+    end
+  end
+end
+
+OrsumInflandi::CLI::App.start(ARGV)

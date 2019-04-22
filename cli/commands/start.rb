@@ -5,6 +5,8 @@ require_relative '../logger'
 module OrsumInflandi
   module Commands
     class Start
+      BACKEND_IMAGE_NAME = 'orsa-scholis/orsum-inflandi'
+
       def initialize(options)
         @options = options
       end
