@@ -4,3 +4,5 @@ tslint:
   config_file: frontend/tslint.json
 golint:
   enabled: true
+rubocop:
+  config_file: .rubocop.yml
