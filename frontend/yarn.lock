@@ -3871,9 +3871,9 @@ normalize-url@^1.4.0:
     query-string "^4.1.0"
     sort-keys "^1.0.0"
 
-notistack@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/notistack/-/notistack-0.7.0.tgz#fc46752ec2712ebe287691b2f3ed597a8667929d"
+notistack@^0.8.0:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/notistack/-/notistack-0.8.1.tgz#6c53eed947c01008918f91abbd7e50773a69fb69"
   dependencies:
     classnames "^2.2.6"
     hoist-non-react-statics "^3.3.0"
