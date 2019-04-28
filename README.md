@@ -8,7 +8,7 @@ Over-engineered 4 in a row game built with a Go server and React/TypeScript clie
 cli/app COMMAND [OPTIONS]
 ```
 
-#### Available commands:
+#### Available commands:
 
 ##### Start
 
