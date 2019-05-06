@@ -13,6 +13,7 @@ module OrsumInflandi
       option :backend, type: :boolean, default: true
       option :frontend, type: :boolean, default: true
       option :force_build, type: :boolean
+      option :dev, type: :boolean, default: false
 
       def start
         require_relative 'commands/start'

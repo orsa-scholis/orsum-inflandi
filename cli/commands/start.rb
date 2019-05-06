@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
+require 'etc'
 require_relative '../logger'
 
 module OrsumInflandi
   module Commands
     class Start
-      BACKEND_IMAGE_NAME = 'orsa-scholis/orsum-inflandi'
+      BACKEND_IMAGE_NAME = 'orsa-scholis/orsum-inflandi-ii'
+      BACKEND_DEV_IMAGE_NAME = 'orsa-scholis/orsum-inflandi-ii-dev'
 
       def initialize(options)
         @options = options
@@ -13,7 +15,7 @@ module OrsumInflandi
 
       def run
         threads = []
-        threads << Thread.new(Dir.pwd, &method(:start_backend)) if @options[:backend]
+        threads << Thread.new(Dir.pwd) { |directory| @options[:dev] ? start_dev_backend(directory) : start_backend(directory) } if @options[:backend]
         threads << Thread.new(&method(:start_frontend)) if @options[:frontend]
 
         %w[INT TERM].each do |signal|
@@ -38,12 +40,22 @@ module OrsumInflandi
 
       def build_backend(directory)
         backend_log('Building image')
-        execute_command(%W[docker build -t #{BACKEND_IMAGE_NAME} #{directory}/backend], &method(:backend_log))
+        execute_command(%W[docker build -f #{directory}/backend/prod.Dockerfile -t #{BACKEND_IMAGE_NAME} #{directory}/backend], &method(:backend_log))
+      end
+
+      def build_dev_backend(directory)
+        backend_log('Building dev image')
+        execute_command(%W[docker build -f #{directory}/backend/dev.Dockerfile -t #{BACKEND_DEV_IMAGE_NAME} #{directory}/backend], &method(:backend_log))
       end
 
       def start_backend(directory)
         build_backend(directory) unless backend_image_exists?
         execute_command(%W[docker run --rm -p 4560:4560 #{BACKEND_IMAGE_NAME} --verbose], &method(:backend_log))
+      end
+
+      def start_dev_backend(directory)
+        build_dev_backend(directory) unless backend_dev_image_exists?
+        execute_command(%W[docker run --rm -p 4560:4560 -v #{directory}/backend:/go/src/github.com/orsa-scholis/orsum-inflandi-II/backend #{BACKEND_DEV_IMAGE_NAME}], &method(:backend_log))
       end
 
       def start_frontend
@@ -52,6 +64,10 @@ module OrsumInflandi
 
       def backend_image_exists?
         system "[ \"$(docker images -q #{BACKEND_IMAGE_NAME} 2>/dev/null)\" != \"\" ]"
+      end
+
+      def backend_dev_image_exists?
+        system "[ \"$(docker images -q #{BACKEND_DEV_IMAGE_NAME} 2>/dev/null)\" != \"\" ]"
       end
 
       def frontend_log(log)
