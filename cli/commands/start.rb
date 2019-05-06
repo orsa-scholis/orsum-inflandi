@@ -15,7 +15,7 @@ module OrsumInflandi
 
       def run
         threads = []
-        threads << Thread.new(Dir.pwd) { |directory| @options[:dev] ? start_dev_backend(directory) : start_backend(directory) } if @options[:backend]
+        threads << backend_thread if @options[:backend]
         threads << Thread.new(&method(:start_frontend)) if @options[:frontend]
 
         %w[INT TERM].each do |signal|
@@ -26,6 +26,10 @@ module OrsumInflandi
       end
 
       private
+
+      def backend_thread
+        Thread.new(Dir.pwd) { |directory| @options[:dev] ? start_dev_backend(directory) : start_backend(directory) }
+      end
 
       def kill_threads(threads)
         puts "\n"
@@ -40,12 +44,18 @@ module OrsumInflandi
 
       def build_backend(directory)
         backend_log('Building image')
-        execute_command(%W[docker build -f #{directory}/backend/prod.Dockerfile -t #{BACKEND_IMAGE_NAME} #{directory}/backend], &method(:backend_log))
+        execute_command(
+          %W[docker build -f #{directory}/backend/prod.Dockerfile -t #{BACKEND_IMAGE_NAME} #{directory}/backend],
+          &method(:backend_log)
+        )
       end
 
       def build_dev_backend(directory)
         backend_log('Building dev image')
-        execute_command(%W[docker build -f #{directory}/backend/dev.Dockerfile -t #{BACKEND_DEV_IMAGE_NAME} #{directory}/backend], &method(:backend_log))
+        execute_command(
+          %W[docker build -f #{directory}/backend/dev.Dockerfile -t #{BACKEND_DEV_IMAGE_NAME} #{directory}/backend],
+          &method(:backend_log)
+        )
       end
 
       def start_backend(directory)
@@ -55,7 +65,11 @@ module OrsumInflandi
 
       def start_dev_backend(directory)
         build_dev_backend(directory) unless backend_dev_image_exists?
-        execute_command(%W[docker run --rm -p 4560:4560 -v #{directory}/backend:/go/src/github.com/orsa-scholis/orsum-inflandi-II/backend #{BACKEND_DEV_IMAGE_NAME}], &method(:backend_log))
+        container_intern_path = '/go/src/github.com/orsa-scholis/orsum-inflandi-II/backend'
+        execute_command(
+          %W[docker run --rm -p 4560:4560 -v #{directory}/backend:#{container_intern_path} #{BACKEND_DEV_IMAGE_NAME}],
+          &method(:backend_log)
+        )
       end
 
       def start_frontend
