@@ -78,27 +78,29 @@ func (messageErr *messageValidationError) Error() string {
 	return messageErr.err
 }
 
-func validateMessage(received message, expected message) (err error) {
+func validateMessage(received message, expected message) (errs []error) {
 	if !received.receive {
-		err = &messageValidationError{err: "the message needs to be received"}
+		errs = append(errs, &messageValidationError{err: "the message needs to be received"})
 	}
+
 	if expected.domain == "*" {
 		return
 	}
+
 	if received.domain != expected.domain {
-		err = &messageValidationError{err: fmt.Sprintf("the domain '%v' does not match expected '%v'", received.domain, expected.domain)}
+		errs = append(errs, &messageValidationError{err: fmt.Sprintf("the domain '%v' does not match expected '%v'", received.domain, expected.domain)})
 	}
 	if received.command != expected.command {
-		err = &messageValidationError{err: fmt.Sprintf("the command '%v' does not match expected '%v'", received.command, expected.command)}
+		errs = append(errs, &messageValidationError{err: fmt.Sprintf("the command '%v' does not match expected '%v'", received.command, expected.command)})
 	}
 	if received.param != expected.param && expected.param[0] != '*' {
-		err = &messageValidationError{err: fmt.Sprintf("the param '%v' does not match expected '%v'", received.param, expected.param)}
+		errs = append(errs, &messageValidationError{err: fmt.Sprintf("the param '%v' does not match expected '%v'", received.param, expected.param)})
 	}
 
-	if err != nil {
-		return err
-	}
+	return errs
+}
 
+func validateMessageParam(received message, expected message) error {
 	if expected.param[0] == '*' && len(expected.param) > 1 {
 		rules := expected.param[2:]
 		ruleList := strings.Split(rules, ",")
@@ -128,7 +130,8 @@ func validateMessage(received message, expected message) (err error) {
 			}
 		}
 	}
-	return
+
+	return nil
 }
 
 type client struct {
@@ -210,31 +213,33 @@ func (c *client) start() {
 	for {
 		cMessage := <-c.receiveChan
 		messageHandled := false
-		messageErrors := make([]string, 0)
+		messageError := ""
 
 		stateFunctions := clientStateMessageHandlers[c.state]
 		for expMessage, messageFunc := range stateFunctions {
 
-			valid := validateMessage(cMessage, expMessage)
-			if valid == nil {
+			errs := validateMessage(cMessage, expMessage)
+			paramErr := validateMessageParam(cMessage, expMessage)
+			errs = append(errs, paramErr)
+			if paramErr == nil {
 				messageFunc(c, cMessage)
 
 				messageHandled = true
 				break
 			} else {
-				if err, ok := valid.(*messageValidationError); ok && err.returnToClient {
-					messageErrors = append(messageErrors, valid.Error())
+				if err, ok := paramErr.(*messageValidationError); ok && err.returnToClient {
+					messageError = err.Error()
 				}
 			}
 		}
 
 		if !messageHandled {
-			logger.Warningf("unhandled message: '%s', \nerrors: '%v+'\nstate: '%s'", cMessage.String(), messageErrors, c.state)
+			logger.Warningf("unhandled message: '%s', \nerrors: '%v+'\nstate: '%s'", cMessage.String(), messageError, c.state)
 			c.sendChan <- message{
 				receive: false,
 				domain:  "error",
 				command: cMessage.command,
-				param:   strings.Join(messageErrors, ", "),
+				param:   messageError,
 			}
 		}
 	}
