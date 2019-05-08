@@ -99,10 +99,6 @@ func validateMessageDomainCommand(received message, expected message) (errs []er
 }
 
 func validateMessageParam(received message, expected message) error {
-	if (received.param == "" || len(received.param) == 0) && expected.param == "*" {
-		return nil
-	}
-
 	if expected.param[0] == '*' && len(expected.param) > 1 {
 		rules := expected.param[2:]
 		ruleList := strings.Split(rules, ",")
@@ -216,31 +212,8 @@ func (c *client) sender() {
 func (c *client) start() {
 	for {
 		cMessage := <-c.receiveChan
-		messageHandled := false
-		messageError := ""
 
-		stateFunctions := clientStateMessageHandlers[c.state]
-		for expMessage, messageFunc := range stateFunctions {
-
-			errs := validateMessageDomainCommand(cMessage, expMessage)
-			if len(errs) > 0 {
-				logger.Infof("%+v", errs)
-				continue
-			}
-			paramErr := validateMessageParam(cMessage, expMessage)
-			errs = append(errs, paramErr)
-			if paramErr == nil {
-				messageFunc(c, cMessage)
-				logger.Infof("Client '%s' handled message: '%+v', with messageHandler: '%s'", c.name, cMessage, expMessage.String())
-
-				messageHandled = true
-				break
-			} else {
-				if err, ok := paramErr.(*messageValidationError); ok && err.returnToClient {
-					messageError = err.Error()
-				}
-			}
-		}
+		messageHandled, messageError := c.checkMessageHandlersIfFit(cMessage)
 
 		if !messageHandled {
 			logger.Warningf("unhandled message: '%s', \nerrors: '%v+'\nstate: '%s'", cMessage.String(), messageError, c.state)
@@ -252,6 +225,35 @@ func (c *client) start() {
 			}
 		}
 	}
+}
+
+func (c *client) checkMessageHandlersIfFit(cMessage message) (messageHandled bool, messageError string) {
+	stateFunctions := clientStateMessageHandlers[c.state]
+	for expMessage, messageFunc := range stateFunctions {
+		errs := validateMessageDomainCommand(cMessage, expMessage)
+		if len(errs) > 0 {
+			logger.Infof("%+v", errs)
+			continue
+		}
+		if (cMessage.param == "" || len(cMessage.param) == 0) && expMessage.param == "*" {
+			continue
+		}
+
+		paramErr := validateMessageParam(cMessage, expMessage)
+		errs = append(errs, paramErr)
+		if paramErr == nil {
+			messageFunc(c, cMessage)
+			logger.Infof("Client '%s' handled message: '%+v', with messageHandler: '%s'", c.name, cMessage, expMessage.String())
+
+			messageHandled = true
+			break
+		} else {
+			if err, ok := paramErr.(*messageValidationError); ok && err.returnToClient {
+				messageError = err.Error()
+			}
+		}
+	}
+	return
 }
 
 func connectionConnectHandler(c *client, recMessage message) {
