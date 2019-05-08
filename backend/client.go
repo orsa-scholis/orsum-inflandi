@@ -307,8 +307,8 @@ func serverNewGameHandler(c *client, recMessage message) {
 }
 
 func gameJoinHandler(c *client, recMessage message) {
-	gameId, _ := strconv.Atoi(recMessage.param)
-	clientState, game := c.server.joinGame(gameId, c)
+	gameID, _ := strconv.Atoi(recMessage.param)
+	clientState, game := c.server.joinGame(gameID, c)
 
 	if clientState == inLobby {
 		c.sendChan <- message{

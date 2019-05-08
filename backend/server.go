@@ -84,11 +84,11 @@ func (s *server) openGame(name string, clientOne *client) bool {
 	return true
 }
 
-func (s *server) joinGame(gameId int, client *client) (returnState clientState, joinedGame game) {
+func (s *server) joinGame(gameID int, client *client) (returnState clientState, joinedGame game) {
 	returnState = inLobby
 
 	for id, sGame := range s.games {
-		if id == gameId {
+		if id == gameID {
 			returnState = sGame.join(client)
 			if returnState != inLobby {
 				joinedGame = *sGame
