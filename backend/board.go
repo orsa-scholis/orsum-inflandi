@@ -18,5 +18,5 @@ func initBoard() *board {
 }
 
 func (b *board) rowFull(i int) bool {
-	return true
+	return false
 }
