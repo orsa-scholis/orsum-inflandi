@@ -16,7 +16,7 @@ settings:
     force: false
     interval: 0s
 schema:
-- name: orsum-inflandi-II/backend
+- name: ""
   path: /go/src/github.com/orsa-scholis/orsum-inflandi-II/backend
   args:
   - -verbose

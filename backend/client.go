@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/google/logger"
 	"net"
+	"strconv"
 	"strings"
 )
 
@@ -60,6 +61,7 @@ func parseMessage(raw string) (m message, err error) {
 			receive: true,
 			domain:  messageParts[0],
 			command: messageParts[1],
+			param:   "",
 		}
 	}
 	if len(messageParts) < 2 || len(messageParts) > 3 {
@@ -78,7 +80,7 @@ func (messageErr *messageValidationError) Error() string {
 	return messageErr.err
 }
 
-func validateMessage(received message, expected message) (errs []error) {
+func validateMessageDomainCommand(received message, expected message) (errs []error) {
 	if !received.receive {
 		errs = append(errs, &messageValidationError{err: "the message needs to be received"})
 	}
@@ -93,14 +95,14 @@ func validateMessage(received message, expected message) (errs []error) {
 	if received.command != expected.command {
 		errs = append(errs, &messageValidationError{err: fmt.Sprintf("the command '%v' does not match expected '%v'", received.command, expected.command)})
 	}
-	if received.param != expected.param && expected.param[0] != '*' {
-		errs = append(errs, &messageValidationError{err: fmt.Sprintf("the param '%v' does not match expected '%v'", received.param, expected.param)})
-	}
-
 	return errs
 }
 
 func validateMessageParam(received message, expected message) error {
+	if (received.param == "" || len(received.param) == 0) && expected.param == "*" {
+		return nil
+	}
+
 	if expected.param[0] == '*' && len(expected.param) > 1 {
 		rules := expected.param[2:]
 		ruleList := strings.Split(rules, ",")
@@ -115,7 +117,7 @@ func validateMessageParam(received message, expected message) error {
 					ruleError = validatorsWithParam[ruleParts[0]](received.param, ruleParts[1])
 				} else {
 					logger.Infof("executing param checker '%s' with param '%s'", ruleParts[0], received.param)
-					ruleError = validators[rule](received.param)
+					ruleError = validators[ruleParts[0]](received.param)
 				}
 
 				if ruleError != nil {
@@ -141,10 +143,11 @@ type client struct {
 	receiveChan chan message
 	sendChan    chan message
 	state       clientState
-	server      server
+	server      *server
+	currentGame *game
 }
 
-func initClient(name string, conn net.Conn) (c *client) {
+func initClient(name string, conn net.Conn, server *server) (c *client) {
 	c = &client{
 		name:        name,
 		conn:        conn,
@@ -152,6 +155,7 @@ func initClient(name string, conn net.Conn) (c *client) {
 		receiveChan: make(chan message),
 		sendChan:    make(chan message, 10),
 		state:       connecting,
+		server:			 server,
 	}
 
 	go c.receiver()
@@ -218,11 +222,16 @@ func (c *client) start() {
 		stateFunctions := clientStateMessageHandlers[c.state]
 		for expMessage, messageFunc := range stateFunctions {
 
-			errs := validateMessage(cMessage, expMessage)
+			errs := validateMessageDomainCommand(cMessage, expMessage)
+			if len(errs) > 0 {
+				logger.Infof("%+v", errs)
+				continue
+			}
 			paramErr := validateMessageParam(cMessage, expMessage)
 			errs = append(errs, paramErr)
 			if paramErr == nil {
 				messageFunc(c, cMessage)
+				logger.Infof("Client '%s' handled message: '%+v', with messageHandler: '%s'", c.name, cMessage, expMessage.String())
 
 				messageHandled = true
 				break
@@ -268,16 +277,23 @@ func infoRequestGamesHandler(c *client, _ message) {
 	}
 }
 
-func serverNewGameHandlder(c *client, recMessage message) {
-	success := c.server.openGame(recMessage.param, *c)
+func serverNewGameHandler(c *client, recMessage message) {
+	success := c.server.openGame(recMessage.param, c)
 
 	if success {
 		c.sendChan <- message{
 			receive: false,
 			domain:  "success",
 			command: "created",
-			param:   "",
+			param:   recMessage.param,
 		}
+
+		go c.server.broadcastMessage(message{
+			receive: false,
+			domain:  "subscription",
+			command: "gameAdded",
+			param:   c.server.getGamesAsString(),
+		}, c)
 	} else {
 		c.sendChan <- message{
 			receive: false,
@@ -289,7 +305,56 @@ func serverNewGameHandlder(c *client, recMessage message) {
 }
 
 func gameJoinHandler(c *client, recMessage message) {
+	clientState, game := c.server.joinGame(recMessage.param, c)
 
+	if clientState == inLobby {
+		c.sendChan <- message{
+			receive: false,
+			domain:  "error",
+			command: "join",
+			param:   "game full or non existent",
+		}
+
+		return
+	}
+
+	c.state = clientState
+	c.currentGame = &game
+
+	var successMessageTemplate = message{
+		receive: false,
+		domain:  "success",
+		command: "joined",
+	}
+
+	if clientState == inGame {
+		successMessageTemplate.param = "1"
+		c.sendChan <- successMessageTemplate
+	} else if clientState == playingGame {
+		successMessageTemplate.param = "2"
+		c.sendChan <- successMessageTemplate
+	}
+}
+
+func gameSetStoneHandler(c *client, recMessage message) {
+	rowNr, _ := strconv.Atoi(recMessage.param)
+	success := c.currentGame.setStone(c, rowNr)
+
+	if success {
+		c.sendChan <- message{
+			receive: false,
+			domain:  "success",
+			command: "setStone",
+			param:   "",
+		}
+	} else {
+		c.sendChan <- message{
+			receive: false,
+			domain:  "error",
+			command: "setStone",
+			param:   "",
+		}
+	}
 }
 
 var clientStateMessageHandlers = map[clientState]map[message]func(*client, message){
@@ -298,9 +363,13 @@ var clientStateMessageHandlers = map[clientState]map[message]func(*client, messa
 	},
 	inLobby: {
 		infoRequestGames: infoRequestGamesHandler,
-		serverNewGame:    serverNewGameHandlder,
+		serverNewGame:    serverNewGameHandler,
 		gameJoin:         gameJoinHandler,
 	},
+	inGame: {
+		gameSetStone: gameSetStoneHandler,
+	},
+	playingGame: {},
 }
 
 var connectionConnect = message{
@@ -321,7 +390,7 @@ var serverNewGame = message{
 	receive: true,
 	domain:  "server",
 	command: "newGame",
-	param:   "*|required,min;3,max;5",
+	param:   "*|required,gt;2,lt;6",
 }
 
 var gameJoin = message{
@@ -329,4 +398,11 @@ var gameJoin = message{
 	domain:  "game",
 	command: "join",
 	param:   "*|required,int",
+}
+
+var gameSetStone = message{
+	receive: true,
+	domain:  "game",
+	command: "setStone",
+	param:   "*|required,int,gt:0,lt:8",
 }

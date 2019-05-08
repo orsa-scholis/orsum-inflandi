@@ -7,11 +7,12 @@ import (
 
 var validators = map[string]func(string) error{
 	"required": required,
+	"int": checkInt,
 }
 
 var validatorsWithParam = map[string]func(string, string) error{
-	"min": min,
-	"max": max,
+	"gt": gt,
+	"lt": lt,
 }
 
 func required(toCheck string) (err error) {
@@ -21,24 +22,32 @@ func required(toCheck string) (err error) {
 	return
 }
 
-func min(toCheck string, minL string) (err error) {
-	minLength, err := strconv.ParseInt(minL, 10, 16)
+func gt(toCheck string, minL string) (err error) {
+	minLength, err := strconv.Atoi(minL)
 	if err != nil {
 		return
 	}
-	if len(toCheck) < int(minLength) {
-		err = fmt.Errorf("the param '%v' does not match rule min:%v", toCheck, minL)
+	if len(toCheck) < minLength {
+		err = fmt.Errorf("the param '%v' does not match rule gt:%v", toCheck, minL)
 	}
 	return
 }
 
-func max(toCheck string, maxL string) (err error) {
-	maxLength, err := strconv.ParseInt(maxL, 10, 16)
+func lt(toCheck string, maxL string) (err error) {
+	maxLength, err := strconv.Atoi(maxL)
 	if err != nil {
 		return
 	}
-	if len(toCheck) > int(maxLength) {
-		err = fmt.Errorf("the param '%v' does not match rule max:%v", toCheck, maxL)
+	if len(toCheck) > maxLength {
+		err = fmt.Errorf("the param '%v' does not match rule lt:%v", toCheck, maxL)
+	}
+	return
+}
+
+func checkInt(toCheck string) (err error) {
+	_, err = strconv.Atoi(toCheck)
+	if err != nil {
+		err = fmt.Errorf("the param '%v' does not match rule int", toCheck)
 	}
 	return
 }

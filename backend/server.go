@@ -15,8 +15,8 @@ import (
 
 type server struct {
 	verbose     bool
-	clients     []client
-	games       []game
+	clients     []*client
+	games       []*game
 	stoppedChan chan bool
 	socket      net.Listener
 }
@@ -29,7 +29,8 @@ func initServer(verbose bool) (ser *server, err error) {
 
 	ser = &server{
 		verbose:     verbose,
-		clients:     make([]client, 0),
+		clients:     make([]*client, 0),
+		games:       make([]*game, 0),
 		stoppedChan: make(chan bool, 1),
 		socket:      socket,
 	}
@@ -59,8 +60,8 @@ func (s *server) start() {
 }
 
 func (s *server) initClientConnection(connection net.Conn) {
-	newClient := initClient(fmt.Sprintf("Client #%v", len(s.clients)), connection)
-	s.clients = append(s.clients, *newClient)
+	newClient := initClient(fmt.Sprintf("Client #%v", len(s.clients)), connection, s)
+	s.clients = append(s.clients, newClient)
 	newClient.start()
 }
 
@@ -71,19 +72,31 @@ func (s *server) getGamesAsString() (list string) {
 	return
 }
 
-func (s *server) openGame(name string, clientOne client) bool {
+func (s *server) openGame(name string, clientOne *client) bool {
 	for _, g := range s.games {
 		if g.name == name {
 			return false
 		}
 	}
-	s.games = append(s.games, game{
-		name:      name,
-		playerOne: clientOne,
-		turn:      1,
-	})
+
+	s.games = append(s.games, initGame(name, clientOne))
 
 	return true
+}
+
+func (s *server) joinGame(gameName string, client *client) (returnState clientState, joinedGame game) {
+	returnState = inLobby
+
+	for _, sGame := range s.games {
+		if sGame.name == gameName {
+			returnState = sGame.join(client)
+			if returnState != inLobby {
+				joinedGame = *sGame
+			}
+		}
+	}
+
+	return
 }
 
 func (s *server) CleanUp() error {
@@ -108,4 +121,14 @@ func (s *server) CleanUp() error {
 	}
 
 	return nil
+}
+
+func (s *server) broadcastMessage(m message, me *client) {
+	for _, client := range s.clients {
+		if client.name == me.name {
+			continue
+		}
+		client.sendChan <- m
+		logger.Infof("Sent broadcast to all clients, message: '%+v", m)
+	}
 }
