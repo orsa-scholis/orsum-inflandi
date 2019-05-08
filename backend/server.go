@@ -79,16 +79,16 @@ func (s *server) openGame(name string, clientOne *client) bool {
 		}
 	}
 
-	s.games = append(s.games, initGame(name, clientOne))
+	s.games = append(s.games, initGame(name))
 
 	return true
 }
 
-func (s *server) joinGame(gameName string, client *client) (returnState clientState, joinedGame game) {
+func (s *server) joinGame(gameId int, client *client) (returnState clientState, joinedGame game) {
 	returnState = inLobby
 
-	for _, sGame := range s.games {
-		if sGame.name == gameName {
+	for id, sGame := range s.games {
+		if id == gameId {
 			returnState = sGame.join(client)
 			if returnState != inLobby {
 				joinedGame = *sGame

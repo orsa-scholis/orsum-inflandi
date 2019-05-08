@@ -151,7 +151,7 @@ func initClient(name string, conn net.Conn, server *server) (c *client) {
 		receiveChan: make(chan message),
 		sendChan:    make(chan message, 10),
 		state:       connecting,
-		server:			 server,
+		server:      server,
 	}
 
 	go c.receiver()
@@ -307,7 +307,8 @@ func serverNewGameHandler(c *client, recMessage message) {
 }
 
 func gameJoinHandler(c *client, recMessage message) {
-	clientState, game := c.server.joinGame(recMessage.param, c)
+	gameId, _ := strconv.Atoi(recMessage.param)
+	clientState, game := c.server.joinGame(gameId, c)
 
 	if clientState == inLobby {
 		c.sendChan <- message{

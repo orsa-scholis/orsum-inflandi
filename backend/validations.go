@@ -7,7 +7,7 @@ import (
 
 var validators = map[string]func(string) error{
 	"required": required,
-	"int": checkInt,
+	"int":      checkInt,
 }
 
 var validatorsWithParam = map[string]func(string, string) error{
