@@ -19,8 +19,6 @@ module OrsumInflandi
         threads << Thread.new(&method(:start_frontend)) if @options[:frontend]
         threads << Thread.new(&method(:start_frontend)) if @options[:frontend] && @options[:dual_frontend]
 
-        puts threads
-
         %w[INT TERM].each do |signal|
           Signal.trap(signal) { kill_threads(threads) }
         end
