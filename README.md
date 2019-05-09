@@ -20,9 +20,13 @@ Usage:
   cli/app start
 
 Options:
-  [--backend], [--no-backend]          # Default: true
-  [--frontend], [--no-frontend]        # Default: true
-  [--force-build], [--no-force-build]
+  [--backend], [--no-backend]              
+                                           # Default: true
+  [--frontend], [--no-frontend]            
+                                           # Default: true
+  [--force-build], [--no-force-build]      
+  [--dev], [--no-dev]                      
+  [--dual-frontend], [--no-dual-frontend]  
 
 Start the app or a part of it
 ```

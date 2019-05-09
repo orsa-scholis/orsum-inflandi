@@ -17,6 +17,9 @@ module OrsumInflandi
         threads = []
         threads << backend_thread if @options[:backend]
         threads << Thread.new(&method(:start_frontend)) if @options[:frontend]
+        threads << Thread.new(&method(:start_frontend)) if @options[:frontend] && @options[:dual_frontend]
+
+        puts threads
 
         %w[INT TERM].each do |signal|
           Signal.trap(signal) { kill_threads(threads) }
@@ -73,7 +76,7 @@ module OrsumInflandi
       end
 
       def start_frontend
-        Dir.chdir('frontend') { execute_command(%w[yarn run start], &method(:frontend_log)) }
+        execute_command(%w[yarn --cwd frontend run start], &method(:frontend_log))
       end
 
       def backend_image_exists?
