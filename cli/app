@@ -20,6 +20,15 @@ module OrsumInflandi
         require_relative 'commands/start'
         Commands::Start.new(options.dup).run
       end
+
+      desc 'mock', 'Start a dummy mock server to test frontend'
+      option :port, type: :numeric, default: 4560
+
+      def mock
+        require_relative 'commands/mock'
+
+        Commands::Mock.new(options.dup).run
+      end
     end
   end
 end

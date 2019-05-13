@@ -7,6 +7,7 @@ import { withSnackbar, withSnackbarProps } from 'notistack';
 import GameList from '../../components/GameList/GameList';
 import Game from '../../models/Game/Game';
 import { History } from 'history';
+import { Connection } from '../../connection/Connection';
 
 interface LobbyScreenProps extends withSnackbarProps {
   classes: any;
@@ -17,6 +18,11 @@ class LobbyScreen extends React.Component<LobbyScreenProps> {
   static propTypes = {
     classes: PropTypes.object,
   };
+
+  componentDidMount(): void {
+    const connection = new Connection('localhost', 4560, (err: Error) => console.log(err));
+    connection.initiateHandshake();
+  }
 
   gameSelected = (_game: Game) => {
     this.props.history.push('/game/1');
