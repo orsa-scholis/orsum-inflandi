@@ -1,0 +1,8 @@
+[package]
+name = "orsum-inflandi-man"
+version = "0.1.0"
+authors = ["Lukas Bischof <polinderis@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+man = "0.3.0"

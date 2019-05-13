@@ -1,0 +1,39 @@
+.TH CLI/APP START 1
+.SH NAME
+cli/app start \- Orsum\-Inflandi's Start CLI Command
+.SH SYNOPSIS
+\fBcli/app start\fR [FLAGS]
+.SH FLAGS
+.TP
+\fB\-\-backend\fR
+Only start backend
+
+.TP
+\fB\-\-frontend\fR
+Only start frontend
+
+.TP
+\fB\-\-dev\fR
+Enables HMR for backend
+
+.TP
+\fB\-\-dual\-frontend\fR
+Starts two frontends for debugging and testing
+.SH EXIT STATUS
+.TP
+\fB0\fR
+Successful program execution.
+
+.TP
+\fB1\fR
+Unsuccessful program execution.
+
+.TP
+\fB101\fR
+The program panicked.
+.SH AUTHORS
+.P
+.RS 2
+.nf
+Lukas Bischof <polinderis@gmail.com>
+Stefan Fehr <philipp@thefehr.me>
