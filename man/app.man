@@ -1,0 +1,30 @@
+.TH CLI/APP 1
+.SH NAME
+cli/app \- Orsum\-Inflandi's CLI
+.SH SYNOPSIS
+\fBcli/app\fR command
+.SH EXIT STATUS
+.TP
+\fB0\fR
+Successful program execution.
+
+.TP
+\fB1\fR
+Unsuccessful program execution.
+
+.TP
+\fB101\fR
+The program panicked.
+.SH EXAMPLES
+.TP
+print help of command
+\fB$ cli/app help\fR
+.br
+<<Help page>>
+
+.SH AUTHORS
+.P
+.RS 2
+.nf
+Lukas Bischof <polinderis@gmail.com>
+Stefan Fehr <philipp@thefehr.me>
