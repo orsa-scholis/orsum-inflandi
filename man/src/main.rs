@@ -19,7 +19,7 @@ fn generate_start_man_page() {
                 .output("<<Help page>>"),
         )
         .author(Author::new("Lukas Bischof").email("polinderis@gmail.com"))
-        .author(Author::new("Stefan Fehr").email("philipp@thefehr.me"))
+        .author(Author::new("Philipp Fehr").email("philipp@thefehr.me"))
         .render();
 
     render_file("app.man", main_man);
@@ -49,7 +49,7 @@ fn generate_main_man_page() {
                 .help("Starts two frontends for debugging and testing")
         )
         .author(Author::new("Lukas Bischof").email("polinderis@gmail.com"))
-        .author(Author::new("Stefan Fehr").email("philipp@thefehr.me"))
+        .author(Author::new("Philipp Fehr").email("philipp@thefehr.me"))
         .render();
     render_file("start.man", start_man);
 }

@@ -27,4 +27,4 @@ print help of command
 .RS 2
 .nf
 Lukas Bischof <polinderis@gmail.com>
-Stefan Fehr <philipp@thefehr.me>
+Philipp Fehr <philipp@thefehr.me>
