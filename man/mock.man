@@ -1,0 +1,27 @@
+.TH CLI/APP MOCK 1
+.SH NAME
+cli/app mock \- Orsum\-Inflandi's Mock Server CLI Command
+.SH SYNOPSIS
+\fBcli/app mock\fR [FLAGS]
+.SH FLAGS
+.TP
+\fB\-\-port\fR
+Specify a custom port number
+.SH EXIT STATUS
+.TP
+\fB0\fR
+Successful program execution.
+
+.TP
+\fB1\fR
+Unsuccessful program execution.
+
+.TP
+\fB101\fR
+The program panicked.
+.SH AUTHORS
+.P
+.RS 2
+.nf
+Lukas Bischof <polinderis@gmail.com>
+Philipp Fehr <philipp@thefehr.me>

@@ -19,6 +19,7 @@ module OrsumInflandi
       def run
         trap_kill_signal { kill_threads(@threads) }
 
+        Logger.new('Server started, waiting for connections').info_log
         loop(&method(:main_loop))
       end
 

@@ -12,7 +12,6 @@ module OrsumInflandi
       desc 'start', 'Start the app or a part of it'
       option :backend, type: :boolean, default: true
       option :frontend, type: :boolean, default: true
-      option :force_build, type: :boolean
       option :dev, type: :boolean, default: false
       option :dual_frontend, type: :boolean, default: false
 
