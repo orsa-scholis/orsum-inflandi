@@ -24,22 +24,33 @@ Usage:
   cli/app start
 
 Options:
-  [--backend], [--no-backend]              
-                                           # Default: true
-  [--frontend], [--no-frontend]            
-                                           # Default: true
+  [--backend], [--no-backend]              # Default: true
+  [--frontend], [--no-frontend]            # Default: true
   [--force-build], [--no-force-build]      
-  [--dev], [--no-dev]                      
-  [--dual-frontend], [--no-dual-frontend]  
+  [--dev], [--no-dev]                      # Default: false
+  [--dual-frontend], [--no-dual-frontend]  # Default: false
 
 Start the app or a part of it
 ```
 
 ##### Help
 
+
 ```text
 Usage:
   cli/app help [COMMAND]
 
 Describe available commands or one specific command
+```
+
+##### Mock
+
+```text
+Usage:
+  app mock
+
+Options:
+  [--port=N]  # Default: 4560
+
+Start a dummy mock server to test frontend
 ```
