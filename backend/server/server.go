@@ -1,36 +1,36 @@
-package main
+package server
 
 import (
 	"fmt"
 	"github.com/google/logger"
+	"github.com/google/uuid"
 	"net"
 )
 
-//type ServerMessage struct {
-//	domain      string
-//	command     string
-//	param       string
-//	attachment string
-//}
+type ServerMessage struct {
+	id     uuid.UUID
+	status string
+	param  string
+}
 
-type server struct {
+type Server struct {
 	verbose     bool
-	clients     []*client
-	games       []*game
+	clients     []*User
+	games       map[GameType]map[uuid.UUID]Game
 	stoppedChan chan bool
 	socket      net.Listener
 }
 
-func initServer(verbose bool) (ser *server, err error) {
+func InitServer(verbose bool) (ser *Server, err error) {
 	socket, err := net.Listen("tcp", ":4560")
 	if nil != err {
 		return
 	}
 
-	ser = &server{
+	ser = &Server{
 		verbose:     verbose,
-		clients:     make([]*client, 0),
-		games:       make([]*game, 0),
+		clients:     make([]*User, 0),
+		games:       make(map[GameType]map[uuid.UUID]Game, 0),
 		stoppedChan: make(chan bool, 1),
 		socket:      socket,
 	}
@@ -38,7 +38,7 @@ func initServer(verbose bool) (ser *server, err error) {
 	return
 }
 
-func (s *server) start() {
+func (s *Server) Start() {
 	logger.Info("server started listening")
 
 	for {
@@ -59,47 +59,41 @@ func (s *server) start() {
 	}
 }
 
-func (s *server) initClientConnection(connection net.Conn) {
-	newClient := initClient(fmt.Sprintf("Client #%v", len(s.clients)), connection, s)
+func (s *Server) initClientConnection(connection net.Conn) {
+	newClient := newUser(fmt.Sprintf("Client #%v", len(s.clients)), connection, s)
 	s.clients = append(s.clients, newClient)
 	newClient.start()
 }
 
-func (s *server) getGamesAsString() (list string) {
+func (s *Server) openGame(name string, clientOne *User) bool {
 	for _, g := range s.games {
-		list = list + g.name + ","
-	}
-	return
-}
-
-func (s *server) openGame(name string, clientOne *client) bool {
-	for _, g := range s.games {
-		if g.name == name {
+		if g.GetName() == name {
 			return false
 		}
 	}
 
-	s.games = append(s.games, initGame(name))
+	// TODO: implement game type to newGame mapper
+	//s.games = append(s.games, NewGame(name))
 
 	return true
 }
 
-func (s *server) joinGame(gameID int, client *client) (returnState clientState, joinedGame game) {
-	returnState = inLobby
+func (s *Server) joinGame(gameID uuid.UUID, user *User) (returnState UserState) {
+	returnState = InLobby
 
-	for id, sGame := range s.games {
-		if id == gameID {
-			returnState = sGame.join(client)
-			if returnState != inLobby {
-				joinedGame = *sGame
+	for gameType := range s.games {
+		for gameUUID := range s.games[gameType] {
+			if gameUUID == gameID {
+				returnState = s.games[gameType][gameUUID].Join(user)
 			}
 		}
+
 	}
 
 	return
 }
 
-func (s *server) CleanUp() error {
+func (s *Server) CleanUp() error {
 	s.stoppedChan <- true
 	logger.Infof("Sending closing calls to %v clients\n", len(s.clients))
 
@@ -112,7 +106,7 @@ func (s *server) CleanUp() error {
 		if err != nil {
 			return err
 		}
-		logger.Infof("Sent closing calls and closed socket of client #%v\n", i)
+		logger.Infof("Sent closing calls and closed socket of User #%v\n", i)
 	}
 
 	err := s.socket.Close()
@@ -123,12 +117,12 @@ func (s *server) CleanUp() error {
 	return nil
 }
 
-func (s *server) broadcastMessage(m message, me *client) {
+func (s *Server) broadcastMessage(m UserMessage, me *User) {
 	for _, client := range s.clients {
 		if client.name == me.name {
 			continue
 		}
 		client.sendChan <- m
-		logger.Infof("Sent broadcast to all clients, message: '%+v", m)
+		logger.Infof("Sent broadcast to all clients, UserMessage: '%+v", m)
 	}
 }

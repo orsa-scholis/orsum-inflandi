@@ -1,71 +1,69 @@
-package main
+package server
 
 import (
 	"bufio"
 	"errors"
 	"fmt"
 	"github.com/google/logger"
+	"github.com/google/uuid"
 	"net"
 	"strconv"
 	"strings"
 )
 
-type clientState int
+type UserState int
 
 const (
-	connecting clientState = iota
-	inLobby
-	inGame
-	playingGame
-	disconnected
+	Connecting UserState = iota
+	InLobby
+	InGame
+	PlayingGame
+	Disconnected
 )
 
-func (state clientState) String() string {
+func (state UserState) String() string {
 	states := [...]string{
 		"Connecting",
 		"InLobby",
 		"InGame",
 		"Disconnected"}
 
-	if state < connecting || state > disconnected {
+	if state < Connecting || state > Disconnected {
 		return "Unknown ClientState"
 	}
 
 	return states[state]
 }
 
-type message struct {
-	receive    bool
-	domain     string
-	command    string
-	param      string
-	attachment string
+type UserMessage struct {
+	id      uuid.UUID
+	domain  string
+	command string
+	param   string
 }
 
-func (m *message) String() string {
+func (m *UserMessage) String() string {
 	return fmt.Sprintf("%s:%s:%s", m.domain, m.command, m.param)
 }
 
-func parseMessage(raw string) (m message, err error) {
+func parseMessage(raw string) (m UserMessage, err error) {
 	messageParts := strings.Split(raw, ":")
 	if len(messageParts) == 3 {
-		m = message{
-			receive: true,
+		m = UserMessage{
 			domain:  messageParts[0],
 			command: messageParts[1],
 			param:   messageParts[2],
 		}
 	}
 	if len(messageParts) == 2 {
-		m = message{
-			receive: true,
+		m = UserMessage{
 			domain:  messageParts[0],
 			command: messageParts[1],
 			param:   "",
 		}
 	}
 	if len(messageParts) < 2 || len(messageParts) > 3 {
-		err = errors.New("message length invalid")
+		err = errors.New("UserMessage length invalid")
 	}
 
 	return
@@ -80,11 +78,7 @@ func (messageErr *messageValidationError) Error() string {
 	return messageErr.err
 }
 
-func validateMessageDomainCommand(received message, expected message) (errs []error) {
-	if !received.receive {
-		errs = append(errs, &messageValidationError{err: "the message needs to be received"})
-	}
-
+func validateMessageDomainCommand(received UserMessage, expected UserMessage) (errs []error) {
 	if expected.domain == "*" {
 		return
 	}
@@ -98,7 +92,7 @@ func validateMessageDomainCommand(received message, expected message) (errs []er
 	return errs
 }
 
-func validateMessageParam(received message, expected message) error {
+func validateMessageParam(received UserMessage, expected UserMessage) error {
 	if expected.param[0] == '*' && len(expected.param) > 1 {
 		rules := expected.param[2:]
 		ruleList := strings.Split(rules, ",")
@@ -132,25 +126,25 @@ func validateMessageParam(received message, expected message) error {
 	return nil
 }
 
-type client struct {
+type User struct {
 	name        string
 	conn        net.Conn
 	stoppedChan chan bool
-	receiveChan chan message
-	sendChan    chan message
-	state       clientState
-	server      *server
-	currentGame *game
+	receiveChan chan UserMessage
+	sendChan    chan UserMessage
+	state       UserState
+	server      *Server
+	currentGame uuid.UUID
 }
 
-func initClient(name string, conn net.Conn, server *server) (c *client) {
-	c = &client{
+func newUser(name string, conn net.Conn, server *Server) (c *User) {
+	c = &User{
 		name:        name,
 		conn:        conn,
 		stoppedChan: make(chan bool, 1),
-		receiveChan: make(chan message),
-		sendChan:    make(chan message, 10),
-		state:       connecting,
+		receiveChan: make(chan UserMessage),
+		sendChan:    make(chan UserMessage, 10),
+		state:       Connecting,
 		server:      server,
 	}
 
@@ -160,7 +154,7 @@ func initClient(name string, conn net.Conn, server *server) (c *client) {
 	return
 }
 
-func (c *client) receiver() {
+func (c *User) receiver() {
 	for {
 		raw, _, err := bufio.NewReader(c.conn).ReadLine()
 
@@ -170,26 +164,25 @@ func (c *client) receiver() {
 				logger.Info("server is stopped, can't accept anymore messages")
 				return
 			default:
-				logger.Warning("can't accept message: ", err)
+				logger.Warning("can't accept UserMessage: ", err)
 				return
 			}
 		}
 
 		parsed, err := parseMessage(string(raw))
 		if err != nil {
-			c.sendChan <- message{
-				receive: false,
+			c.sendChan <- UserMessage{
 				domain:  "error",
-				command: "message",
+				command: "UserMessage",
 				param:   err.Error(),
 			}
 		}
-		logger.Info(fmt.Sprintf("Client '%s' received message: '%+v'", c.name, parsed))
+		logger.Info(fmt.Sprintf("Client '%s' received UserMessage: '%+v'", c.name, parsed))
 		c.receiveChan <- parsed
 	}
 }
 
-func (c *client) sender() {
+func (c *User) sender() {
 	for {
 		sendMessage := <-c.sendChan
 		_, err := c.conn.Write([]byte(sendMessage.String() + "\n"))
@@ -200,25 +193,24 @@ func (c *client) sender() {
 				logger.Info("server is stopped, can't accept anymore messages")
 				return
 			default:
-				logger.Warning("can't write message: ", err)
+				logger.Warning("can't write UserMessage: ", err)
 				continue
 			}
 		}
 
-		logger.Infof(fmt.Sprintf("Client '%s' sent message: '%+v'", c.name, sendMessage))
+		logger.Infof(fmt.Sprintf("Client '%s' sent UserMessage: '%+v'", c.name, sendMessage))
 	}
 }
 
-func (c *client) start() {
+func (c *User) start() {
 	for {
 		cMessage := <-c.receiveChan
 
 		messageHandled, messageError := c.checkMessageHandlersIfFit(cMessage)
 
 		if !messageHandled {
-			logger.Warningf("unhandled message: '%s', \nerrors: '%v+'\nstate: '%s'", cMessage.String(), messageError, c.state)
-			c.sendChan <- message{
-				receive: false,
+			logger.Warningf("unhandled UserMessage: '%s', \nerrors: '%v+'\nstate: '%s'", cMessage.String(), messageError, c.state)
+			c.sendChan <- UserMessage{
 				domain:  "error",
 				command: cMessage.command,
 				param:   messageError,
@@ -227,7 +219,7 @@ func (c *client) start() {
 	}
 }
 
-func (c *client) checkMessageHandlersIfFit(cMessage message) (messageHandled bool, messageError string) {
+func (c *User) checkMessageHandlersIfFit(cMessage UserMessage) (messageHandled bool, messageError string) {
 	stateFunctions := clientStateMessageHandlers[c.state]
 	for expMessage, messageFunc := range stateFunctions {
 		errs := validateMessageDomainCommand(cMessage, expMessage)
@@ -243,7 +235,7 @@ func (c *client) checkMessageHandlersIfFit(cMessage message) (messageHandled boo
 		errs = append(errs, paramErr)
 		if paramErr == nil {
 			messageFunc(c, cMessage)
-			logger.Infof("Client '%s' handled message: '%+v', with messageHandler: '%s'", c.name, cMessage, expMessage.String())
+			logger.Infof("Client '%s' handled UserMessage: '%+v', with messageHandler: '%s'", c.name, cMessage, expMessage.String())
 
 			messageHandled = true
 			break
@@ -256,49 +248,49 @@ func (c *client) checkMessageHandlersIfFit(cMessage message) (messageHandled boo
 	return
 }
 
-func connectionConnectHandler(c *client, recMessage message) {
-	c.name = recMessage.param
-	c.state = inLobby
+func (c *User) SendMessage(message UserMessage) {
+	c.sendChan <- message
+}
 
-	c.sendChan <- message{
-		receive: false,
+func connectionConnectHandler(c *User, recMessage UserMessage) {
+	c.name = recMessage.param
+	c.state = InLobby
+
+	c.sendChan <- UserMessage{
 		domain:  "success",
 		command: "accepted",
 		param:   "",
 	}
 }
 
-func infoRequestGamesHandler(c *client, _ message) {
+func infoRequestGamesHandler(c *User, _ UserMessage) {
 	games := c.server.getGamesAsString()
 
-	c.sendChan <- message{
-		receive: false,
+	c.sendChan <- UserMessage{
 		domain:  "success",
 		command: "requested",
 		param:   games,
 	}
 }
 
-func serverNewGameHandler(c *client, recMessage message) {
+func serverNewGameHandler(c *User, recMessage UserMessage) {
 	success := c.server.openGame(recMessage.param, c)
 
 	if success {
-		c.sendChan <- message{
-			receive: false,
+		c.sendChan <- UserMessage{
 			domain:  "success",
 			command: "created",
 			param:   recMessage.param,
 		}
 
-		go c.server.broadcastMessage(message{
-			receive: false,
+		// TODO: Change to full gameList with playerCount
+		go c.server.broadcastMessage(UserMessage{
 			domain:  "subscription",
 			command: "gameAdded",
 			param:   c.server.getGamesAsString(),
 		}, c)
 	} else {
-		c.sendChan <- message{
-			receive: false,
+		c.sendChan <- UserMessage{
 			domain:  "error",
 			command: "newGame",
 			param:   "game name not unique",
@@ -306,13 +298,12 @@ func serverNewGameHandler(c *client, recMessage message) {
 	}
 }
 
-func gameJoinHandler(c *client, recMessage message) {
+func gameJoinHandler(c *User, recMessage UserMessage) {
 	gameID, _ := strconv.Atoi(recMessage.param)
-	clientState, game := c.server.joinGame(gameID, c)
+	clientState := c.server.joinGame(gameID, c)
 
-	if clientState == inLobby {
-		c.sendChan <- message{
-			receive: false,
+	if clientState == InLobby {
+		c.sendChan <- UserMessage{
 			domain:  "error",
 			command: "join",
 			param:   "game full or non existent",
@@ -322,37 +313,34 @@ func gameJoinHandler(c *client, recMessage message) {
 	}
 
 	c.state = clientState
-	c.currentGame = &game
+	c.currentGame = gameID
 
-	var successMessageTemplate = message{
-		receive: false,
+	var successMessageTemplate = UserMessage{
 		domain:  "success",
 		command: "joined",
 	}
 
-	if clientState == inGame {
+	if clientState == InGame {
 		successMessageTemplate.param = "1"
 		c.sendChan <- successMessageTemplate
-	} else if clientState == playingGame {
+	} else if clientState == PlayingGame {
 		successMessageTemplate.param = "2"
 		c.sendChan <- successMessageTemplate
 	}
 }
 
-func gameSetStoneHandler(c *client, recMessage message) {
+func gameSetStoneHandler(c *User, recMessage UserMessage) {
 	rowNr, _ := strconv.Atoi(recMessage.param)
-	success := c.currentGame.setStone(c, rowNr)
+	success := c.server.getGame(c.currentGame).setStone(c, rowNr)
 
 	if success {
-		c.sendChan <- message{
-			receive: false,
+		c.sendChan <- UserMessage{
 			domain:  "success",
 			command: "setStone",
 			param:   "",
 		}
 	} else {
-		c.sendChan <- message{
-			receive: false,
+		c.sendChan <- UserMessage{
 			domain:  "error",
 			command: "setStone",
 			param:   "",
@@ -360,51 +348,46 @@ func gameSetStoneHandler(c *client, recMessage message) {
 	}
 }
 
-var clientStateMessageHandlers = map[clientState]map[message]func(*client, message){
-	connecting: {
+var clientStateMessageHandlers = map[UserState]map[UserMessage]func(*User, UserMessage){
+	Connecting: {
 		connectionConnect: connectionConnectHandler,
 	},
-	inLobby: {
+	InLobby: {
 		infoRequestGames: infoRequestGamesHandler,
 		serverNewGame:    serverNewGameHandler,
 		gameJoin:         gameJoinHandler,
 	},
-	inGame: {
+	InGame: {
 		gameSetStone: gameSetStoneHandler,
 	},
-	playingGame: {},
+	PlayingGame: {},
 }
 
-var connectionConnect = message{
-	receive: true,
+var connectionConnect = UserMessage{
 	domain:  "connection",
 	command: "connect",
 	param:   "*",
 }
 
-var infoRequestGames = message{
-	receive: true,
+var infoRequestGames = UserMessage{
 	domain:  "info",
 	command: "requestGames",
 	param:   "*",
 }
 
-var serverNewGame = message{
-	receive: true,
+var serverNewGame = UserMessage{
 	domain:  "server",
 	command: "newGame",
 	param:   "*|required,gt;2,lt;6",
 }
 
-var gameJoin = message{
-	receive: true,
+var gameJoin = UserMessage{
 	domain:  "game",
 	command: "join",
 	param:   "*|required,int",
 }
 
-var gameSetStone = message{
-	receive: true,
+var gameSetStone = UserMessage{
 	domain:  "game",
 	command: "setStone",
 	param:   "*|required,int,gt:0,lt:8",

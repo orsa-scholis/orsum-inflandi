@@ -1,4 +1,4 @@
-package main
+package fourinarow
 
 type board struct {
 	rows [5][7]int
