@@ -3,6 +3,7 @@ GEM
   specs:
     ast (2.4.0)
     colorize (0.8.1)
+    google-protobuf (3.7.1)
     jaro_winkler (1.5.2)
     parallel (1.17.0)
     parser (2.6.2.1)
@@ -26,6 +27,7 @@ PLATFORMS
 
 DEPENDENCIES
   colorize
+  google-protobuf
   rubocop
   thor
 

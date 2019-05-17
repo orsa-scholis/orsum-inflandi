@@ -28,6 +28,15 @@ module OrsumInflandi
 
         Commands::Mock.new(options.dup).run
       end
+
+      desc 'proto', 'Converts an object to proto'
+      option :manual, type: :boolean, default: false
+
+      def proto
+        require_relative 'commands/proto'
+
+        Commands::Proto.new(options.dup).run
+      end
     end
   end
 end
