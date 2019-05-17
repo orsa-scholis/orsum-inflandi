@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+protoc --go_out=. proto/Types.proto
+protoc --ruby_out=. proto/Types.proto
+protoc \
+  --plugin="protoc-gen-ts=./frontend/node_modules/.bin/protoc-gen-ts" \
+  --js_out="import_style=commonjs,binary:." \
+  --ts_out=. \
+  proto/Types.proto
