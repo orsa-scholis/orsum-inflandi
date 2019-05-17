@@ -50,6 +50,7 @@
     "electron-compile": "^6.4.3",
     "electron-devtools-installer": "^2.1.0",
     "electron-squirrel-startup": "^1.0.0",
+    "google-protobuf": "^3.8.0-rc.1",
     "notistack": "^0.8.0",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
@@ -74,6 +75,7 @@
     "electron-forge": "5.2.2",
     "electron-prebuilt-compile": "3.0.6",
     "husky": "2.2.0",
+    "ts-protoc-gen": "^0.10.0",
     "tslint": "5.11.0",
     "typescript": "3.4.5"
   }

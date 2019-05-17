@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+enum GameType {
+  FOUR_IN_A_ROW = 0;
+}
+
+message GameRequest {
+  string name = 1;
+  GameType type = 2;
+}
+
+message User {
+  string name = 1;
+}
+
+message Game {
+  string name = 1;
+  GameType type = 2;
+  uint32 id = 3;
+  User initiator = 4;
+  User opponent = 5;
+}
+
+message GameList {
+  repeated Game games = 1;
+}
+
+message FourInARowTurnPayload {
+  uint32 gameID = 1;
+  uint32 row = 2;
+}
+
+enum ChatMessageContext {
+  LOBBY = 0;
+  IN_GAME = 1;
+}
+
+message ChatMessage {
+  ChatMessageContext context = 1;
+  User user = 2;
+  string content = 3;
+}
+
+enum GameResult {
+  WON = 0;
+  LOST = 1;
+  TIE = 2;
+}
+
+message GameEnd {
+  GameResult result = 1;
+}
