@@ -7,5 +7,10 @@
   "labels": ["dependencies"],
   "vulnerabilityAlerts": {
     "labels": ["security"]
-  }
+  },
+  "automerge": true,
+  "major": {
+    "automerge": false
+  },
+  "excludeCommitPaths": ["vendor/golang.org/x/sys/**"]
 }
