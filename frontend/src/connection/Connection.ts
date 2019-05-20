@@ -23,15 +23,12 @@ export class Connection {
       console.dir(e);
       console.dir(new TextDecoder('utf-8').decode(e));
 
-      this.socket.write((new TextEncoder()).encode('Hello from client\n'));
       // TODO: Deserialize and resolve/reject
     });
   }
 
   send(message: Message): Promise<Message> {
-    console.log('will send');
     return new Promise<Message>((resolve, reject) => {
-      console.log('sending');
       const packet = new Packet(message, resolve, reject);
       this.queue.enqueue(packet);
       this.transmitPacket(packet);
@@ -39,9 +36,6 @@ export class Connection {
   }
 
   private transmitPacket(packet: Packet) {
-    console.log('writing');
-    let data = packet.serializeMessage();
-    console.dir(data);
-    this.socket.write(data);
+    this.socket.write(packet.serializeMessage());
   }
 }
