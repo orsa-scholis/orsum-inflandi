@@ -10,6 +10,7 @@ import { History } from 'history';
 import { Connection } from '../../connection/Connection';
 import { Message } from "../../connection/Message";
 import { Protocol } from "../../connection/protocol/Commands";
+import { User } from "../../connection/proto/Types_pb";
 
 interface LobbyScreenProps extends withSnackbarProps {
   classes: any;
@@ -25,7 +26,9 @@ class LobbyScreen extends React.Component<LobbyScreenProps> {
     const connection = new Connection('localhost', 4560, (err: Error) => console.log(err));
     connection.initiateHandshake();
 
-    void connection.send(new Message(Protocol.ClientCommands.CONNECTION.CONNECT));
+    let user = new User();
+    user.setName('Hanspeter');
+    void connection.send(new Message(Protocol.ClientCommands.CONNECTION.CONNECT, user));
   }
 
   gameSelected = (_game: Game) => {

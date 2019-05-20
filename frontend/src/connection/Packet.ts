@@ -30,8 +30,7 @@ export default class Packet {
       return undefined;
     }
 
-    const decoder = new TextDecoder('utf-8');
-    const base64 = atob(decoder.decode(this.message.payload.serializeBinary()));
+    const base64 = Buffer.from(this.message.payload.serializeBinary()).toString('base64');
     return (new TextEncoder()).encode(`:${base64}`);
   }
 
