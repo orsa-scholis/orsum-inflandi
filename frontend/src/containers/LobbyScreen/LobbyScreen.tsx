@@ -8,6 +8,8 @@ import GameList from '../../components/GameList/GameList';
 import Game from '../../models/Game/Game';
 import { History } from 'history';
 import { Connection } from '../../connection/Connection';
+import { Message } from "../../connection/Message";
+import { Protocol } from "../../connection/protocol/Commands";
 
 interface LobbyScreenProps extends withSnackbarProps {
   classes: any;
@@ -22,6 +24,8 @@ class LobbyScreen extends React.Component<LobbyScreenProps> {
   componentDidMount(): void {
     const connection = new Connection('localhost', 4560, (err: Error) => console.log(err));
     connection.initiateHandshake();
+
+    void connection.send(new Message(Protocol.ClientCommands.CONNECTION.CONNECT));
   }
 
   gameSelected = (_game: Game) => {
