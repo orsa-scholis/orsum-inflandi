@@ -4,7 +4,7 @@ import * as uuid from 'uuid/v1';
 type ResolverCallback = <T extends Message>(value?: T | PromiseLike<T>) => void;
 type RejectionCallback = (reason?: any) => void;
 
-const MESSAGE_DELIMITER = (new TextEncoder()).encode('\n');
+const MESSAGE_DELIMITER = Object.seal((new TextEncoder()).encode('\n'));
 
 export default class Packet {
   readonly message: Message;

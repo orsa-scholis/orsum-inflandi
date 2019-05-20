@@ -3,16 +3,16 @@ import * as PropTypes from 'prop-types';
 import { AppBar, Grid, IconButton, Toolbar, Typography, withStyles } from '@material-ui/core';
 import PlusIcon from '@material-ui/icons/Add';
 import LobbyScreenStyles from './LobbyScreenStyles';
-import { withSnackbar, withSnackbarProps } from 'notistack';
+import { withSnackbar, WithSnackbarProps } from 'notistack';
 import GameList from '../../components/GameList/GameList';
 import Game from '../../models/Game/Game';
 import { History } from 'history';
 import { Connection } from '../../connection/Connection';
-import { Message } from "../../connection/Message";
-import { Protocol } from "../../connection/protocol/Commands";
-import { User } from "../../connection/proto/Types_pb";
+import { Message } from '../../connection/Message';
+import { Protocol } from '../../connection/protocol/Commands';
+import { User } from '../../connection/proto/Types_pb';
 
-interface LobbyScreenProps extends withSnackbarProps {
+interface LobbyScreenProps extends WithSnackbarProps {
   classes: any;
   history: History;
 }
@@ -66,4 +66,5 @@ class LobbyScreen extends React.Component<LobbyScreenProps> {
   }
 }
 
+// @ts-ignore
 export default withSnackbar(withStyles(LobbyScreenStyles)(LobbyScreen));
