@@ -4,6 +4,6 @@ protoc --go_out=. proto/Types.proto
 protoc --ruby_out=. proto/Types.proto
 protoc \
   --plugin="protoc-gen-ts=./frontend/node_modules/.bin/protoc-gen-ts" \
-  --js_out="import_style=commonjs,binary:." \
-  --ts_out=. \
+  --js_out="import_style=commonjs,binary:frontend/src/connection" \
+  --ts_out=frontend/src/connection \
   proto/Types.proto
