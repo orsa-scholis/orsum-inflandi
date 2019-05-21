@@ -1,13 +1,5 @@
-import {
-  ChatMessage,
-  FourInARowTurnPayload,
-  Game,
-  GameEnd,
-  GameList,
-  GameRequest,
-  User
-} from './Types_pb';
+import * as Protobuf from 'google-protobuf';
 
-export type Turn = FourInARowTurnPayload;
-
-export type ProtoPayload = User | GameRequest | Game | GameList | Turn | ChatMessage | GameEnd;
+export interface ProtoPayload extends Protobuf.Message {
+  serializeBinary(): Uint8Array;
+}
