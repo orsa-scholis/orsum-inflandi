@@ -8,4 +8,6 @@ import {
   User
 } from './Types_pb';
 
-export type ProtoPayload = User | GameRequest | Game | GameList | FourInARowTurnPayload | ChatMessage | GameEnd;
+export type Turn = FourInARowTurnPayload;
+
+export type ProtoPayload = User | GameRequest | Game | GameList | Turn | ChatMessage | GameEnd;
