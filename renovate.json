@@ -12,5 +12,5 @@
   "major": {
     "automerge": false
   },
-  "excludeCommitPaths": ["vendor/golang.org/x/sys/**"]
+  "excludeCommitPaths": ["golang.org/x/sys/**"]
 }
