@@ -79,7 +79,7 @@
     "electron-prebuilt-compile": "3.0.6",
     "husky": "2.3.0",
     "ts-protoc-gen": "0.10.0",
-    "tslint": "5.11.0",
+    "tslint": "5.17.0",
     "typescript": "3.5.1"
   }
 }
