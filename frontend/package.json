@@ -80,6 +80,6 @@
     "husky": "2.3.0",
     "ts-protoc-gen": "0.10.0",
     "tslint": "5.11.0",
-    "typescript": "3.4.5"
+    "typescript": "3.5.1"
   }
 }
