@@ -1,15 +1,15 @@
 export namespace Protocol {
-  class ProtocolCommand {
+  export class ProtocolCommand {
     readonly domain: string;
-    readonly command: string;
+    readonly command?: string;
 
-    constructor(domain: string, command: string) {
+    constructor(domain: string, command?: string) {
       this.domain = domain;
       this.command = command;
     }
 
     toString() {
-      return `${this.domain}:${this.command}`;
+      return this.command ? `${this.domain}:${this.command}` : this.domain;
     }
   }
 
@@ -27,5 +27,16 @@ export namespace Protocol {
     CHAT: {
       SEND: new ProtocolCommand('chat', 'send')
     },
+  });
+
+  export const PossibleServerCommands = Object.freeze({
+    SUCCESS: new ProtocolCommand('success'),
+    FAILURE: new ProtocolCommand('failure'),
+    BROADCAST: {
+      CHAT: new ProtocolCommand('broadcast', 'chat'),
+      GAMES: new ProtocolCommand('broadcast', 'games'),
+      TURN: new ProtocolCommand('broadcast', 'turn'),
+      END: new ProtocolCommand('broadcast', 'end')
+    }
   });
 }

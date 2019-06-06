@@ -2,6 +2,7 @@ import * as net from 'net';
 import { Message } from './Message';
 import PacketQueue from './PacketQueue';
 import Packet from './Packet';
+import PacketSerializer from './PacketSerializer';
 
 export class Connection {
   private readonly server: string;
@@ -29,13 +30,13 @@ export class Connection {
 
   send(message: Message): Promise<Message> {
     return new Promise<Message>((resolve, reject) => {
-      const packet = new Packet(message, resolve, reject);
-      this.queue.enqueue(packet);
+      const packet = new Packet(message);
+      this.queue.enqueue(packet, resolve, reject);
       this.transmitPacket(packet);
     });
   }
 
   private transmitPacket(packet: Packet) {
-    this.socket.write(packet.serializeMessage());
+    this.socket.write(new PacketSerializer(packet).serialize());
   }
 }

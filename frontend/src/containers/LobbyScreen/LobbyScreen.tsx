@@ -11,6 +11,7 @@ import { Connection } from '../../connection/Connection';
 import { Message } from '../../connection/Message';
 import { Protocol } from '../../connection/protocol/Commands';
 import { User } from '../../connection/proto/Types_pb';
+import PacketDeserializer from '../../connection/PacketDeserializer';
 
 interface LobbyScreenProps extends WithSnackbarProps {
   classes: any;
@@ -29,6 +30,11 @@ class LobbyScreen extends React.Component<LobbyScreenProps> {
     let user = new User();
     user.setName('Hanspeter');
     void connection.send(new Message(Protocol.ClientCommands.CONNECTION.CONNECT, user));
+
+    const testMessage = 'e45db850-8896-11e9-b1f5-8f30fd4a23b4:broadcast:chat:CglIYW5zcGV0ZXI=';
+    const pd = new PacketDeserializer(testMessage, User);
+    const packet = pd.deserialize();
+    console.dir(packet);
   }
 
   gameSelected = (_game: Game) => {
