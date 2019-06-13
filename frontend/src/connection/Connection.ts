@@ -3,6 +3,8 @@ import { Message } from './Message';
 import PacketQueue from './PacketQueue';
 import Packet from './Packet';
 import PacketSerializer from './PacketSerializer';
+import { ProtoPayload } from './proto/ProtoPayload';
+import { ResolverCallback } from './EnqueuedPacket';
 
 export class Connection {
   private readonly server: string;
@@ -28,15 +30,15 @@ export class Connection {
     });
   }
 
-  send(message: Message): Promise<Message> {
-    return new Promise<Message>((resolve, reject) => {
+  send<T extends ProtoPayload>(message: Message<T>): Promise<Message<T>> {
+    return new Promise<Message<T>>((resolve, reject) => {
       const packet = new Packet(message);
-      this.queue.enqueue(packet, resolve, reject);
+      this.queue.enqueue(packet, resolve as ResolverCallback, reject);
       this.transmitPacket(packet);
     });
   }
 
-  private transmitPacket(packet: Packet) {
+  private transmitPacket<T extends ProtoPayload>(packet: Packet<T>) {
     this.socket.write(new PacketSerializer(packet).serialize());
   }
 }

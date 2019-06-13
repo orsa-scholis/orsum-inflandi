@@ -1,10 +1,11 @@
 import Packet from './Packet';
 import { EnqueuedPacket, RejectionCallback, ResolverCallback } from './EnqueuedPacket';
+import { ProtoPayload } from './proto/ProtoPayload';
 
 export default class PacketQueue {
-  private queue: EnqueuedPacket[] = [];
+  private queue: EnqueuedPacket<ProtoPayload>[] = [];
 
-  enqueue(packet: Packet, resolverCallback: ResolverCallback, rejectionCallback: RejectionCallback) {
+  enqueue<T extends ProtoPayload>(packet: Packet<T>, resolverCallback: ResolverCallback, rejectionCallback: RejectionCallback) {
     this.queue.push(new EnqueuedPacket(packet, resolverCallback, rejectionCallback));
   }
 

@@ -1,11 +1,11 @@
 import { Protocol } from './protocol/Commands';
 import { ProtoPayload } from './proto/ProtoPayload';
 
-export class Message {
+export class Message<T extends ProtoPayload> {
   command: Protocol.Command;
-  payload?: ProtoPayload;
+  payload?: T;
 
-  constructor(command: Protocol.Command, payload?: ProtoPayload) {
+  constructor(command: Protocol.Command, payload?: T) {
     this.command = command;
     this.payload = payload;
   }

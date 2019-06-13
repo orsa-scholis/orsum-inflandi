@@ -29,7 +29,12 @@ export default class PacketDeserializer<PayloadType extends ProtobufMessage> {
     this.payloadClass = payloadClass;
   }
 
-  deserialize(): Packet {
+  for(payloadClass: ProtobufMessageClass<PayloadType>): this {
+    this.payloadClass = payloadClass;
+    return this;
+  }
+
+  deserialize(): Packet<PayloadType> {
     const splitted = this.input.split(':');
     if (splitted.length < 3) {
       throw new SerializationError('Message has invalid segmentation');
@@ -53,7 +58,7 @@ export default class PacketDeserializer<PayloadType extends ProtobufMessage> {
     return this.raw.uuid;
   }
 
-  private deserializeMessage(): Message {
+  private deserializeMessage(): Message<PayloadType> {
     const needle = new Protocol.ProtocolCommand(this.raw.domain, this.raw.command).toString();
     const messageCommand = ALL_SERVER_COMMANDS.find(command => command.toString() === needle);
 
