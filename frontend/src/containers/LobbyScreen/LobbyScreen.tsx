@@ -22,7 +22,6 @@ class LobbyScreen extends React.Component<LobbyScreenProps> {
   componentDidMount(): void {
     const connection = new ServerConnection('localhost', 4560, console.error);
 
-    // success:Cg0KCVRlc3QgZ2FtZRgB
     console.log('Sending connect');
     connection.sendConnect('Peter').then(answer => {
       console.log('received answer.');
