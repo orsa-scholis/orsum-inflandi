@@ -2,11 +2,11 @@ import { Protocol } from './protocol/Commands';
 import { ProtoPayload } from './proto/ProtoPayload';
 
 export class Message<T extends ProtoPayload> {
-  command: Protocol.Command;
+  instruction: Protocol.Instruction;
   payload?: T;
 
-  constructor(command: Protocol.Command, payload?: T) {
-    this.command = command;
+  constructor(command: Protocol.Instruction, payload?: T) {
+    this.instruction = command;
     this.payload = payload;
   }
 }

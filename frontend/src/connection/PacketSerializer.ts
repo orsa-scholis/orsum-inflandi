@@ -38,6 +38,6 @@ export default class PacketSerializer {
   }
 
   private serializeCommand() {
-    return (new TextEncoder()).encode(this.packet.message.command.toString());
+    return (new TextEncoder()).encode(this.packet.message.instruction.toString());
   }
 }

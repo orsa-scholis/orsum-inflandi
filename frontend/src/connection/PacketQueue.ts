@@ -3,9 +3,9 @@ import { EnqueuedPacket, RejectionCallback, ResolverCallback } from './EnqueuedP
 import { ProtoPayload } from './proto/ProtoPayload';
 
 export default class PacketQueue {
-  private queue: EnqueuedPacket<ProtoPayload>[] = [];
+  private queue: EnqueuedPacket[] = [];
 
-  enqueue<T extends ProtoPayload>(packet: Packet<T>, resolverCallback: ResolverCallback, rejectionCallback: RejectionCallback) {
+  enqueue(packet: Packet<ProtoPayload>, resolverCallback: ResolverCallback, rejectionCallback: RejectionCallback) {
     this.queue.push(new EnqueuedPacket(packet, resolverCallback, rejectionCallback));
   }
 
@@ -13,13 +13,12 @@ export default class PacketQueue {
     return this.queue.find(enqueuedPacket => enqueuedPacket.packet.uuid == packetUUID);
   }
 
-  popPacket(answerUUID: string) {
+  popPacket(answerUUID: string): EnqueuedPacket | undefined {
     const packet = this.findPacket(answerUUID);
     if (!packet) {
       return undefined;
     }
 
-    const index = this.queue.indexOf(packet);
-    return this.queue.splice(index, 1);
+    return this.queue.splice(this.queue.indexOf(packet), 1)[0];
   }
 }

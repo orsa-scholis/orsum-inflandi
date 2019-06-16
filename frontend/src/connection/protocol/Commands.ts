@@ -1,42 +1,33 @@
+import ProtocolInstruction from './ProtocolInstruction';
+import ClientProtocolInstruction from './ClientProtocolInstruction';
+import { Game, GameList } from '../proto/Types_pb';
+import ProtobufMessageClass from '../ProtobufMessageClass';
+
 export namespace Protocol {
-  export class ProtocolCommand {
-    readonly domain: string;
-    readonly command?: string;
+  export type Instruction = ProtocolInstruction | ClientProtocolInstruction<ProtobufMessageClass<any>>;
 
-    constructor(domain: string, command?: string) {
-      this.domain = domain;
-      this.command = command;
-    }
-
-    toString() {
-      return this.command ? `${this.domain}:${this.command}` : this.domain;
-    }
-  }
-
-  export type Command = ProtocolCommand;
-
-  export const ClientCommands = Object.freeze({
+  export const ClientInstructions = Object.freeze({
     CONNECTION: {
-      CONNECT: new ProtocolCommand('connection', 'connect')
+      CONNECT: new ClientProtocolInstruction('connection', 'connect', GameList)
     },
     GAME: {
-      NEW: new ProtocolCommand('game', 'new'),
-      JOIN: new ProtocolCommand('game', 'join'),
-      TURN: new ProtocolCommand('game', 'turn')
+      NEW: new ClientProtocolInstruction('game', 'new', Game),
+      JOIN: new ClientProtocolInstruction('game', 'join'),
+      TURN: new ClientProtocolInstruction('game', 'turn')
     },
     CHAT: {
-      SEND: new ProtocolCommand('chat', 'send')
+      SEND: new ClientProtocolInstruction('chat', 'send')
     },
   });
 
-  export const PossibleServerCommands = Object.freeze({
-    SUCCESS: new ProtocolCommand('success'),
-    FAILURE: new ProtocolCommand('failure'),
+  export const PossibleServerInstructions = Object.freeze({
+    SUCCESS: new ProtocolInstruction('success'),
+    FAILURE: new ProtocolInstruction('failure'),
     BROADCAST: {
-      CHAT: new ProtocolCommand('broadcast', 'chat'),
-      GAMES: new ProtocolCommand('broadcast', 'games'),
-      TURN: new ProtocolCommand('broadcast', 'turn'),
-      END: new ProtocolCommand('broadcast', 'end')
+      CHAT: new ProtocolInstruction('broadcast', 'chat'),
+      GAMES: new ProtocolInstruction('broadcast', 'games'),
+      TURN: new ProtocolInstruction('broadcast', 'turn'),
+      END: new ProtocolInstruction('broadcast', 'end')
     }
   });
 }

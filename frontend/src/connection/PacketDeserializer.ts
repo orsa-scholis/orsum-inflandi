@@ -3,18 +3,16 @@ import SerializationError from './SerializationError';
 import { Message } from './Message';
 import { Protocol } from './protocol/Commands';
 import { Message as ProtobufMessage } from 'google-protobuf';
+import ProtobufMessageClass from './ProtobufMessageClass';
+import ProtocolInstruction from './protocol/ProtocolInstruction';
 
 const UUID_MATCHER = Object.freeze(/(?:(?:\w|\d){4,}-){4}(?:\w|\d){12}/);
-const ALL_SERVER_COMMANDS = Object.values(Protocol.PossibleServerCommands).reduce((r: Protocol.Command[], v) => {
-  return r.concat((v.constructor.name === 'ProtocolCommand') ? [v] : Object.values(v));
+const ALL_SERVER_COMMANDS = Object.values(Protocol.PossibleServerInstructions).reduce((r: Protocol.Instruction[], v) => {
+  return r.concat((v.constructor.name === 'ProtocolInstruction') ? [v] : Object.values(v));
 }, []);
 
-interface ProtobufMessageClass<T> {
-  new(...args: any[]): T;
-  deserializeBinary(bytes: Uint8Array): ProtobufMessage;
-}
-
 export default class PacketDeserializer<PayloadType extends ProtobufMessage> {
+  private payloadClass?: ProtobufMessageClass<PayloadType>;
   private input: string;
   private raw: {
     uuid: string;
@@ -22,7 +20,6 @@ export default class PacketDeserializer<PayloadType extends ProtobufMessage> {
     command: string;
     payload: string;
   };
-  private payloadClass?: ProtobufMessageClass<PayloadType>;
 
   constructor(input: string, payloadClass?: ProtobufMessageClass<PayloadType>) {
     this.input = input;
@@ -35,15 +32,24 @@ export default class PacketDeserializer<PayloadType extends ProtobufMessage> {
   }
 
   deserialize(): Packet<PayloadType> {
-    const splitted = this.input.split(':');
+    this.splitMessage();
+
+    return new Packet(this.deserializeMessage(), this.deserializeUUID());
+  }
+
+  scanUUID() {
+    this.splitMessage();
+    return this.deserializeUUID();
+  }
+
+  private splitMessage() {
+    const splitted = this.input.trim().split(':');
     if (splitted.length < 3) {
       throw new SerializationError('Message has invalid segmentation');
     }
 
     const [uuid, domain, command, payload] = splitted;
     this.raw = { uuid, domain, command, payload };
-
-    return new Packet(this.deserializeMessage(), this.deserializeUUID());
   }
 
   private deserializeUUID(): string {
@@ -59,14 +65,28 @@ export default class PacketDeserializer<PayloadType extends ProtobufMessage> {
   }
 
   private deserializeMessage(): Message<PayloadType> {
-    const needle = new Protocol.ProtocolCommand(this.raw.domain, this.raw.command).toString();
-    const messageCommand = ALL_SERVER_COMMANDS.find(command => command.toString() === needle);
+    return new Message(this.findMessageCommand(), this.deserializePayload());
+  }
+
+  private findMessageCommand() {
+    let messageCommand = this.findServerCommand(new ProtocolInstruction(this.raw.domain, this.raw.command));
 
     if (messageCommand === undefined) {
-      throw new SerializationError(`Unknown command '${needle}'`);
+      messageCommand = this.findServerCommand(new ProtocolInstruction(this.raw.domain));
+
+      if (messageCommand === undefined) {
+        throw new SerializationError(`Unknown command '${this.raw.command}' for domain '${this.raw.domain}'`);
+      } else {
+        this.raw.payload = this.raw.command;
+      }
     }
 
-    return new Message(messageCommand, this.deserializePayload());
+    return messageCommand;
+  }
+
+  private findServerCommand(command: ProtocolInstruction) {
+    const needle = command.toString();
+    return ALL_SERVER_COMMANDS.find(command => command.toString() === needle);
   }
 
   private deserializePayload(): PayloadType | undefined {

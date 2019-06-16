@@ -7,11 +7,7 @@ import { withSnackbar, WithSnackbarProps } from 'notistack';
 import GameList from '../../components/GameList/GameList';
 import Game from '../../models/Game/Game';
 import { History } from 'history';
-import { Connection } from '../../connection/Connection';
-import { Message } from '../../connection/Message';
-import { Protocol } from '../../connection/protocol/Commands';
-import { User } from '../../connection/proto/Types_pb';
-import PacketDeserializer from '../../connection/PacketDeserializer';
+import { ServerConnection } from '../../connection/ServerConnection';
 
 interface LobbyScreenProps extends WithSnackbarProps {
   classes: any;
@@ -24,19 +20,20 @@ class LobbyScreen extends React.Component<LobbyScreenProps> {
   };
 
   componentDidMount(): void {
-    const connection = new Connection('localhost', 4560, (err: Error) => console.log(err));
-    connection.initiateHandshake();
+    const connection = new ServerConnection('localhost', 4560, console.error);
 
-    let user = new User();
-    user.setName('Hanspeter');
-    void connection.send(new Message(Protocol.ClientCommands.CONNECTION.CONNECT, user));
-
-    const testMessage = 'e45db850-8896-11e9-b1f5-8f30fd4a23b4:broadcast:chat:CglIYW5zcGV0ZXI=';
-    const pd = new PacketDeserializer(testMessage, User);
-    const packet = pd.deserialize();
-    console.dir(packet);
+    // success:Cg0KCVRlc3QgZ2FtZRgB
+    console.log('Sending connect');
+    connection.sendConnect('Peter').then(answer => {
+      console.log('received answer.');
+      console.log(answer.payload!.getGamesList().map(game => game.getName()));
+      console.dir(answer);
+    }).catch(reason => {
+      console.error(reason);
+    });
   }
 
+  // noinspection UnterminatedStatementJS
   gameSelected = (_game: Game) => {
     this.props.history.push('/game/1');
   }
