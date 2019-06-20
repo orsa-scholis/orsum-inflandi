@@ -7,7 +7,6 @@ import { withSnackbar, WithSnackbarProps } from 'notistack';
 import GameList from '../../components/GameList/GameList';
 import Game from '../../models/Game/Game';
 import { History } from 'history';
-import { ServerConnection } from '../../connection/ServerConnection';
 
 interface LobbyScreenProps extends WithSnackbarProps {
   classes: any;
@@ -18,19 +17,6 @@ class LobbyScreen extends React.Component<LobbyScreenProps> {
   static propTypes = {
     classes: PropTypes.object,
   };
-
-  componentDidMount(): void {
-    const connection = new ServerConnection('localhost', 4560, console.error);
-
-    console.log('Sending connect');
-    connection.sendConnect('Peter').then(answer => {
-      console.log('received answer.');
-      console.log(answer.payload!.getGamesList().map(game => game.getName()));
-      console.dir(answer);
-    }).catch(reason => {
-      console.error(reason);
-    });
-  }
 
   // noinspection UnterminatedStatementJS
   gameSelected = (_game: Game) => {
