@@ -1,6 +1,6 @@
 import { Connection } from './Connection';
 import { GameList, User } from './proto/Types_pb';
-import { Protocol } from './protocol/Commands';
+import { Protocol } from './protocol/Instructions';
 import { Message } from './Message';
 
 export class ServerConnection extends Connection {

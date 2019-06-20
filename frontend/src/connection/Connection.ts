@@ -7,7 +7,7 @@ import { ProtoPayload } from './proto/ProtoPayload';
 import { EnqueuedPacket, ResolverCallback } from './EnqueuedPacket';
 import PacketDeserializer from './PacketDeserializer';
 import ClientProtocolInstruction from './protocol/ClientProtocolInstruction';
-import { Protocol } from './protocol/Commands';
+import { Protocol } from './protocol/Instructions';
 
 export class Connection {
   private readonly server: string;
@@ -24,6 +24,16 @@ export class Connection {
     this.socket.on('error', this.errorHandler);
     this.socket.connect(this.port, this.server);
     this.socket.addListener('data', this.receivedData.bind(this));
+  }
+
+  addBroadcastListenerForDomain(listener: (Message))
+
+  send<T extends ProtoPayload>(message: Message<ProtoPayload>): Promise<Message<T>> {
+    return new Promise<Message<T>>((resolve, reject) => {
+      const packet = new Packet(message);
+      this.queue.enqueue(packet, resolve as ResolverCallback, reject);
+      this.transmitPacket(packet);
+    });
   }
 
   private receivedData(data: Buffer) {
@@ -53,14 +63,6 @@ export class Connection {
     } catch (e) {
       wrappedQuestionPacket.reject(e);
     }
-  }
-
-  send<T extends ProtoPayload>(message: Message<ProtoPayload>): Promise<Message<T>> {
-    return new Promise<Message<T>>((resolve, reject) => {
-      const packet = new Packet(message);
-      this.queue.enqueue(packet, resolve as ResolverCallback, reject);
-      this.transmitPacket(packet);
-    });
   }
 
   private transmitPacket<T extends ProtoPayload>(packet: Packet<T>) {
