@@ -26,8 +26,6 @@ export class Connection {
     this.socket.addListener('data', this.receivedData.bind(this));
   }
 
-  addBroadcastListenerForDomain(listener: (Message))
-
   send<T extends ProtoPayload>(message: Message<ProtoPayload>): Promise<Message<T>> {
     return new Promise<Message<T>>((resolve, reject) => {
       const packet = new Packet(message);
