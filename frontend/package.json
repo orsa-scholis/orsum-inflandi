@@ -65,7 +65,7 @@
     "@material-ui/core": "3.9.3",
     "@material-ui/icons": "3.0.2",
     "@types/electron-devtools-installer": "2.2.0",
-    "@types/google-protobuf": "3.2.7",
+    "@types/google-protobuf": "3.7.0",
     "@types/prop-types": "15.7.1",
     "@types/react": "16.8.22",
     "@types/react-dom": "16.8.4",
