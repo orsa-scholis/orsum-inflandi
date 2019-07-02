@@ -7,4 +7,6 @@ gem 'colorize'
 gem 'google-protobuf'
 gem 'rubocop'
 gem 'rubocop-performance'
+gem 'sorbet', group: :development
+gem 'sorbet-runtime'
 gem 'thor'
