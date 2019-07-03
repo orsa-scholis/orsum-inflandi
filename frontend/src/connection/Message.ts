@@ -1,4 +1,4 @@
-import { Protocol } from './protocol/Commands';
+import { Protocol } from './protocol/Instructions';
 import { ProtoPayload } from './proto/ProtoPayload';
 
 export class Message<T extends ProtoPayload> {
