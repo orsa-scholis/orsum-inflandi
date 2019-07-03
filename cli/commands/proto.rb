@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 require 'google/protobuf'
@@ -8,6 +9,9 @@ require_relative './base'
 module OrsumInflandi
   module Commands
     class Proto < Base
+      extend T::Sig
+
+      sig { void }
       def run
         return run_manual if @options[:manual]
 
@@ -16,6 +20,7 @@ module OrsumInflandi
 
       private
 
+      sig { returns(T.noreturn) }
       def run_manual
         exit system 'pry -r "google/protobuf" -r "./proto/Types_pb"'
       end
