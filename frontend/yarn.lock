@@ -144,10 +144,10 @@
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@types/electron-devtools-installer/-/electron-devtools-installer-2.2.0.tgz#32ee4ebbe99b3daf9847a6d2097dc00b5de94f10"
 
-"@types/google-protobuf@3.7.0":
-  version "3.7.0"
-  resolved "https://registry.yarnpkg.com/@types/google-protobuf/-/google-protobuf-3.7.0.tgz#a71f669992754bcc8e8abbdcc32cec59405ce510"
-  integrity sha512-bIccCrtUCqlV5wEzQRyBpSD1N40CjQN3Tja/lAUgGjVm6Gk/njiiLw7ICc2f2aewicb5rjQESiWlIP7OeG3uHw==
+"@types/google-protobuf@3.7.1":
+  version "3.7.1"
+  resolved "https://registry.yarnpkg.com/@types/google-protobuf/-/google-protobuf-3.7.1.tgz#69503856e717a4ed2fd0216d4aa3f0bebf5df5df"
+  integrity sha512-kiLxbqoi2C7NmkGj1ZpkSDyIqj4vqDEIjx7wX+O0GXV6bLX6u/oLz49CwefD0c0vzaKeBdOqmUtI8bC0bBRr0w==
 
 "@types/history@*":
   version "4.7.2"
