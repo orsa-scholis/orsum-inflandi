@@ -1,7 +1,7 @@
 package main
 
 import (
-	server2 "github.com/orsa-scholis/orsum-inflandi-II/backend/server"
+	server2 "github.com/orsa-scholis/orsum-inflandi-II/backend/legacyServer"
 	"net"
 	"testing"
 )
@@ -16,7 +16,7 @@ func TestClient(t *testing.T) {
 	client := server2.initClient("Lukas", conn, server)
 
 	if client.name != "Lukas" {
-		t.Errorf("User.name = %s; want 'Lukas'", client.name)
+		t.Errorf("Client.name = %s; want 'Lukas'", client.name)
 	}
 }
 

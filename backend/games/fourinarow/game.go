@@ -1,46 +1,54 @@
 package fourinarow
 
-import "github.com/orsa-scholis/orsum-inflandi-II/backend/server"
+import (
+	"github.com/orsa-scholis/orsum-inflandi-II/backend/legacyServer"
+	Types "github.com/orsa-scholis/orsum-inflandi-II/proto"
+)
 
-type Game struct {
-	playerOne    *server.User
-	playerTwo    *server.User
-	playerOnTurn *server.User
-	Name         string
+type FourInARow struct {
+	Types.Game
+	Initiator    *legacyServer.Client
+	Opponent     *legacyServer.Client
+	playerOnTurn *legacyServer.Client
 	board        *board
 }
 
-func NewGame(name string) (newGame *Game) {
-	newGame = &Game{
-		Name:  name,
+func NewGame(name string) (newFourInARow *FourInARow) {
+	newGame := Types.Game{
+		Name: name,
+	}
+
+	newFourInARow = &FourInARow{
+		Game:  newGame,
 		board: initBoard(),
 	}
-	newGame.board.game = newGame
+
+	newFourInARow.board.game = newFourInARow
 	return
 }
 
-func (g *Game) isFull() bool {
-	if g.playerOne == nil || g.playerTwo == nil {
+func (g *FourInARow) isFull() bool {
+	if g.Initiator == nil || g.Opponent == nil {
 		return false
 	}
 	return true
 }
 
-func (g *Game) Join(client *server.User) server.UserState {
+func (g *FourInARow) Join(client *legacyServer.Client) legacyServer.ClientState {
 	if g.isFull() {
-		return server.InLobby
+		return legacyServer.InLobby
 	}
 
-	if g.playerOne == nil {
-		g.playerOne = client
+	if g.Initiator == nil {
+		g.Initiator = client
 		g.playerOnTurn = client
-		return server.InGame
+		return legacyServer.InGame
 	}
-	g.playerTwo = client
-	return server.PlayingGame
+	g.Opponent = client
+	return legacyServer.PlayingGame
 }
 
-func (g *Game) setStone(c *server.User, rowNr int) bool {
+func (g *FourInARow) setStone(c *legacyServer.Client, rowNr int) bool {
 	if g.board.rowFull(rowNr) {
 		return false
 	}
@@ -48,14 +56,14 @@ func (g *Game) setStone(c *server.User, rowNr int) bool {
 	return true
 }
 
-func (g *Game) broadcastMessage(m server.UserMessage, me *server.User) {
+func (g *FourInARow) broadcastMessage(m legacyServer.UserMessage, me *legacyServer.Client) {
 	if !g.isFull() {
 		return
 	}
 
-	if g.playerOne == me {
-		g.playerTwo.SendMessage(m)
+	if g.Initiator == me {
+		g.Opponent.SendMessage(m)
 	} else {
-		g.playerOne.SendMessage(m)
+		g.Initiator.SendMessage(m)
 	}
 }
