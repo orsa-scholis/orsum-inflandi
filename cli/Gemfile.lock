@@ -21,6 +21,10 @@ GEM
     rubocop-performance (1.1.0)
       rubocop (>= 0.67.0)
     ruby-progressbar (1.10.0)
+    sorbet (0.4.4366)
+      sorbet-static (= 0.4.4366)
+    sorbet-runtime (0.4.4366)
+    sorbet-static (0.4.4366-universal-darwin-14)
     thor (0.20.3)
     unicode-display_width (1.5.0)
 
@@ -32,6 +36,8 @@ DEPENDENCIES
   google-protobuf
   rubocop
   rubocop-performance
+  sorbet
+  sorbet-runtime
   thor
 
 RUBY VERSION
