@@ -12,5 +12,7 @@
   "major": {
     "automerge": false
   },
-  "excludePackageNames": ["golang.org/x/sys/**"]
+  "packageRules": [{
+    "excludePackageNames": ["golang.org/x/sys/**"]
+  }]
 }
