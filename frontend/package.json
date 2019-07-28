@@ -71,7 +71,7 @@
     "@types/react-dom": "16.8.4",
     "@types/react-router": "5.0.2",
     "@types/react-router-dom": "4.3.4",
-    "@types/uuid": "3.4.4",
+    "@types/uuid": "3.4.5",
     "babel-plugin-transform-async-to-generator": "6.24.1",
     "babel-preset-env": "1.7.0",
     "babel-preset-react": "6.24.1",
