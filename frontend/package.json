@@ -58,7 +58,7 @@
     "react-hot-loader": "^4.3.12",
     "react-router-dom": "^5.0.0",
     "tslib": "^1.4.0",
-    "typeface-roboto": "^0.0.54",
+    "typeface-roboto": "^0.0.75",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
