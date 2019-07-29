@@ -67,7 +67,7 @@
     "@types/electron-devtools-installer": "2.2.0",
     "@types/google-protobuf": "3.7.1",
     "@types/prop-types": "15.7.1",
-    "@types/react": "16.8.22",
+    "@types/react": "16.8.23",
     "@types/react-dom": "16.8.4",
     "@types/react-router": "5.0.2",
     "@types/react-router-dom": "4.3.4",
