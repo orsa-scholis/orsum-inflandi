@@ -3,3 +3,4 @@ github.com/google/logger v1.0.0/go.mod h1:tQN+I/DyBt051hEHNEzPgIeyy/GD1WJaKbqPSc
 golang.org/x/sys v0.0.0-20190422173550-953cdadca894 h1:I1H82UvcKKs7LLgUebogm16Tu+RUN38zBjQUOr7kvuY=
 golang.org/x/sys v0.0.0-20190422173550-953cdadca894/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20190506124727-ca7f33d4116e/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+golang.org/x/sys v0.0.0-20190804062647-51ab0e2deafa/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
