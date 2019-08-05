@@ -1,7 +1,7 @@
 import Packet from './Packet';
 import SerializationError from './SerializationError';
 import { Message } from './Message';
-import { Protocol } from './protocol/Commands';
+import { Protocol } from './protocol/Instructions';
 import { Message as ProtobufMessage } from 'google-protobuf';
 import ProtobufMessageClass from './ProtobufMessageClass';
 import ProtocolInstruction from './protocol/ProtocolInstruction';
