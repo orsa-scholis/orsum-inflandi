@@ -1,8 +1,7 @@
 name: "Automerger"
 on: 
-  - pull_request
   - pull_request_review
-  - status
+  - label
 
 jobs:
   triage:
@@ -12,3 +11,4 @@ jobs:
       env:
         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         MERGE_METHOD: squash
+        LABELS: "!wip,automerge"
