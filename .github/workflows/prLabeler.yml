@@ -1,6 +1,9 @@
 name: "Pull Request Labeler"
 on: 
-- pull-request
+  pull_request:
+    branches:
+    - master
+    - develop
 
 jobs:
   triage:
