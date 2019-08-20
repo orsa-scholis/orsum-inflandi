@@ -1,0 +1,11 @@
+backend:
+  backend/**/*
+frontend:
+  frontend/**/*
+cli:
+  cli/**/*
+documentation:
+  docs/**/*
+  man/**/*
+protobuf:
+  proto/**/*

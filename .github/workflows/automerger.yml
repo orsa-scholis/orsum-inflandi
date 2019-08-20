@@ -1,0 +1,14 @@
+name: "Automerger"
+on: 
+  - pull_request_review
+  - label
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: pascalgn/automerge-action@v0.2.4
+      env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        MERGE_METHOD: squash
+        LABELS: "!wip,automerge"
