@@ -1,12 +1,8 @@
 syntax = "proto3";
 
-enum GameType {
-  FOUR_IN_A_ROW = 0;
-}
-
 message GameRequest {
   string name = 1;
-  GameType type = 2;
+  string type = 2;
 }
 
 message User {
@@ -15,7 +11,7 @@ message User {
 
 message Game {
   string name = 1;
-  GameType type = 2;
+  string type = 2;
   uint32 id = 3;
   User initiator = 4;
   User opponent = 5;
