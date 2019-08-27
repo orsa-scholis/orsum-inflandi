@@ -6,6 +6,7 @@
 ![License](https://img.shields.io/github/license/orsa-scholis/orsum-inflandi-II.svg) ![Repo size](https://img.shields.io/github/repo-size/orsa-scholis/orsum-inflandi-II.svg)
 [![DeepScan grade](https://deepscan.io/api/teams/3648/projects/5377/branches/41232/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=3648&pid=5377&bid=41232)
 [![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
+[![BCH compliance](https://bettercodehub.com/edge/badge/orsa-scholis/orsum-inflandi-II?branch=develop)](https://bettercodehub.com/)
 
 Unnecessarily complicated and over-engineered 4 in a row game built with a Go server and React/TypeScript client server
 
