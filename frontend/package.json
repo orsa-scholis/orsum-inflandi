@@ -78,7 +78,7 @@
     "electron-forge": "5.2.2",
     "electron-prebuilt-compile": "3.0.6",
     "husky": "3.0.4",
-    "ts-protoc-gen": "0.10.0",
+    "ts-protoc-gen": "0.11.0",
     "tslint": "5.19.0",
     "typescript": "3.5.3"
   }
