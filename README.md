@@ -1,5 +1,5 @@
 ![image](https://user-images.githubusercontent.com/12525476/66127607-615c6b00-e5ec-11e9-81e3-764b8bf5b8a5.png)
-# Orsum-inflandi-II
+# Orsum Inflandi
 
 [![Build Status](https://semaphoreci.com/api/v1/orsa-scholis/orsum-inflandi-ii/branches/develop/shields_badge.svg)](https://semaphoreci.com/orsa-scholis/orsum-inflandi-ii)
 [![Maintainability](https://api.codeclimate.com/v1/badges/d853daa69ca35eb79268/maintainability)](https://codeclimate.com/github/orsa-scholis/orsum-inflandi-II/maintainability)
