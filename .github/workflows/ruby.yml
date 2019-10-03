@@ -8,10 +8,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Set up Ruby 2.6
+    - name: Load Ruby version
+      run: echo "##[set-output name=RUBYV;]$(cat .ruby-version)"
+      id: rnv
+    - name: Set up Ruby
       uses: actions/setup-ruby@v1
       with:
-        ruby-version: 2.6.x
+        ruby-version: "${{ steps.rnv.outputs.RUBYV }}"
     - name: Build and test with Rake
       run: |
         cd cli
