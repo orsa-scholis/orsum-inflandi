@@ -1,5 +1,5 @@
 package `is`.orsa_scholis.inflandi
 
-class Main {
-
+fun main() {
+  println("Server is starting...")
 }
