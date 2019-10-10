@@ -14,7 +14,7 @@ import java.nio.channels.SocketChannel
  * @author pawegio
  */
 @Throws(IOException::class)
-fun main(args: Array<String>) {
+fun simpleServerExample() {
   val selector = Selector.open()
 
   val channel = ServerSocketChannel.open()
@@ -26,33 +26,37 @@ fun main(args: Array<String>) {
   }
 
   while (true) {
-    log("Waiting")
-    selector.select()
+    simpleServerLoop(selector, channel)
+  }
+}
 
-    val keys = selector.selectedKeys()
-    val iterator = keys.iterator()
-    while (iterator.hasNext()) {
-      val key = iterator.next()
-      if (key.isAcceptable) {
-        channel.accept().apply {
-          configureBlocking(false)
-          register(selector, SelectionKey.OP_READ)
-          log("Connection accepted: $localAddress")
-        }
-      } else if (key.isReadable) {
-        val client = key.channel() as SocketChannel
-        val buffer = ByteBuffer.allocate(256)
-        client.read(buffer)
-        val result = buffer.data()
-        log("Message received: $result")
+fun simpleServerLoop(selector: Selector, channel: ServerSocketChannel) {
+  log("Waiting")
+  selector.select()
 
-        if (result == "Close") {
-          client.close()
-          log("Connection closed")
-        }
+  val keys = selector.selectedKeys()
+  val iterator = keys.iterator()
+  while (iterator.hasNext()) {
+    val key = iterator.next()
+    if (key.isAcceptable) {
+      channel.accept().apply {
+        configureBlocking(false)
+        register(selector, SelectionKey.OP_READ)
+        log("Connection accepted: $localAddress")
       }
-      iterator.remove()
+    } else if (key.isReadable) {
+      val client = key.channel() as SocketChannel
+      val buffer = ByteBuffer.allocate(256)
+      client.read(buffer)
+      val result = buffer.data()
+      log("Message received: $result")
+
+      if (result == "Close") {
+        client.close()
+        log("Connection closed")
+      }
     }
+    iterator.remove()
   }
 }
 
