@@ -37,27 +37,35 @@ fun simpleServerLoop(selector: Selector, channel: ServerSocketChannel) {
   val keys = selector.selectedKeys()
   val iterator = keys.iterator()
   while (iterator.hasNext()) {
-    val key = iterator.next()
-    if (key.isAcceptable) {
-      channel.accept().apply {
-        configureBlocking(false)
-        register(selector, SelectionKey.OP_READ)
-        log("Connection accepted: $localAddress")
-      }
-    } else if (key.isReadable) {
-      val client = key.channel() as SocketChannel
-      val buffer = ByteBuffer.allocate(256)
-      client.read(buffer)
-      val result = buffer.data()
-      log("Message received: $result")
-
-      if (result == "Close") {
-        client.close()
-        log("Connection closed")
-      }
-    }
-    iterator.remove()
+    serverHasNext(iterator, channel, selector)
   }
+}
+
+private fun serverHasNext(
+  iterator: MutableIterator<SelectionKey>,
+  channel: ServerSocketChannel,
+  selector: Selector
+) {
+  val key = iterator.next()
+  if (key.isAcceptable) {
+    channel.accept().apply {
+      configureBlocking(false)
+      register(selector, SelectionKey.OP_READ)
+      log("Connection accepted: $localAddress")
+    }
+  } else if (key.isReadable) {
+    val client = key.channel() as SocketChannel
+    val buffer = ByteBuffer.allocate(256)
+    client.read(buffer)
+    val result = buffer.data()
+    log("Message received: $result")
+
+    if (result == "Close") {
+      client.close()
+      log("Connection closed")
+    }
+  }
+  iterator.remove()
 }
 
 fun log(message: String) {
