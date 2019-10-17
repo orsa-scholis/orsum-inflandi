@@ -7,7 +7,7 @@
 [![DeepScan grade](https://deepscan.io/api/teams/5605/projects/7437/branches/75399/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=5605&pid=7437&bid=75399)[![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 [![BCH compliance](https://bettercodehub.com/edge/badge/orsa-scholis/orsum-inflandi?branch=develop)](https://bettercodehub.com/)
 
-Unnecessarily complicated and over-engineered 4 in a row game built with a Go server and React/TypeScript client server
+Unnecessarily complicated and over-engineered 4 in a row game built with a Kotlin server and React/TypeScript client server
 
 ### CLI Usage
 
