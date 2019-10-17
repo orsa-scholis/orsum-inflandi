@@ -20,7 +20,8 @@ jobs:
     - name: Install and test
       run: |
         cd frontend
-        yarn install --skip-integrity-check
+        yarn cache clean
+        yarn install
         yarn run package
         yarn run lint
       env:
