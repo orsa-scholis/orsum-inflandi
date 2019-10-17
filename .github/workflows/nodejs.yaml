@@ -21,7 +21,7 @@ jobs:
       run: |
         cd frontend
         yarn install
-        yarn run make
+        yarn run package
         yarn run lint
       env:
         CI: true
