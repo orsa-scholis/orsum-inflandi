@@ -1,4 +1,4 @@
-package `is`.orsa_scholis.inflandi
+package orsa_scholis.inflandi
 
 import java.nio.ByteBuffer
 
