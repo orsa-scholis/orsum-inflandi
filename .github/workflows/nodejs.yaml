@@ -20,8 +20,8 @@ jobs:
     - name: npm install, build, and test
       run: |
         cd frontend
-        npm install
-        npm run build --if-present
-        npm test
+        yarn install
+        yarn run package
+        yarn test
       env:
         CI: true
