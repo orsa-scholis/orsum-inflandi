@@ -3,30 +3,28 @@ GEM
   specs:
     ast (2.4.0)
     colorize (0.8.1)
-    google-protobuf (3.7.1)
-    jaro_winkler (1.5.2)
+    google-protobuf (3.10.0)
+    jaro_winkler (1.5.3)
     parallel (1.17.0)
-    parser (2.6.2.1)
+    parser (2.6.5.0)
       ast (~> 2.4.0)
-    psych (3.1.0)
     rainbow (3.0.0)
-    rubocop (0.67.2)
+    rubocop (0.75.0)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
-      parser (>= 2.5, != 2.5.1.1)
-      psych (>= 3.1.0)
+      parser (>= 2.6)
       rainbow (>= 2.2.2, < 4.0)
       ruby-progressbar (~> 1.7)
-      unicode-display_width (>= 1.4.0, < 1.6)
-    rubocop-performance (1.1.0)
-      rubocop (>= 0.67.0)
-    ruby-progressbar (1.10.0)
-    sorbet (0.4.4366)
-      sorbet-static (= 0.4.4366)
-    sorbet-runtime (0.4.4366)
-    sorbet-static (0.4.4366-universal-darwin-14)
+      unicode-display_width (>= 1.4.0, < 1.7)
+    rubocop-performance (1.5.0)
+      rubocop (>= 0.71.0)
+    ruby-progressbar (1.10.1)
+    sorbet (0.4.4833)
+      sorbet-static (= 0.4.4833)
+    sorbet-runtime (0.4.4833)
+    sorbet-static (0.4.4833-universal-darwin-14)
     thor (0.20.3)
-    unicode-display_width (1.5.0)
+    unicode-display_width (1.6.0)
 
 PLATFORMS
   ruby
@@ -41,7 +39,7 @@ DEPENDENCIES
   thor
 
 RUBY VERSION
-   ruby 2.6.2p47
+   ruby 2.6.3p62
 
 BUNDLED WITH
    1.17.2

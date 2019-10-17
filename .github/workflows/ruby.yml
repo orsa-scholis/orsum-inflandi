@@ -1,0 +1,23 @@
+name: Ruby
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Load Ruby version
+      run: echo "##[set-output name=RUBYV;]$(cat .ruby-version)"
+      id: rnv
+    - name: Set up Ruby
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: "${{ steps.rnv.outputs.RUBYV }}"
+    - name: Build and test with Rake
+      run: |
+        cd cli
+        gem install bundler
+        bundle install --jobs 4 --retry 3
+        bundle exec rubocop

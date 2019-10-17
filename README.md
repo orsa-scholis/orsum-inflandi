@@ -1,13 +1,11 @@
 ![image](https://user-images.githubusercontent.com/12525476/66127607-615c6b00-e5ec-11e9-81e3-764b8bf5b8a5.png)
-# Orsum-inflandi-II
+# Orsum Inflandi
 
-[![Build Status](https://semaphoreci.com/api/v1/orsa-scholis/orsum-inflandi-ii/branches/develop/shields_badge.svg)](https://semaphoreci.com/orsa-scholis/orsum-inflandi-ii)
-[![Maintainability](https://api.codeclimate.com/v1/badges/d853daa69ca35eb79268/maintainability)](https://codeclimate.com/github/orsa-scholis/orsum-inflandi-II/maintainability)
-[![Known Vulnerabilities](https://snyk.io/test/github/orsa-scholis/orsum-inflandi-II/badge.svg?targetFile=frontend%2Fpackage.json)](https://snyk.io/test/github/orsa-scholis/orsum-inflandi-II?targetFile=frontend%2Fpackage.json)
-![License](https://img.shields.io/github/license/orsa-scholis/orsum-inflandi-II.svg) ![Repo size](https://img.shields.io/github/repo-size/orsa-scholis/orsum-inflandi-II.svg)
-[![DeepScan grade](https://deepscan.io/api/teams/3648/projects/5377/branches/41232/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=3648&pid=5377&bid=41232)
-[![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
-[![BCH compliance](https://bettercodehub.com/edge/badge/orsa-scholis/orsum-inflandi-II?branch=develop)](https://bettercodehub.com/)
+[![Build Status](https://semaphoreci.com/api/v1/orsa-scholis/orsum-inflandi/branches/develop/shields_badge.svg)](https://semaphoreci.com/orsa-scholis/orsum-inflandi)
+[![Maintainability](https://api.codeclimate.com/v1/badges/213e7b22133dc6c11cc4/maintainability)](https://codeclimate.com/github/orsa-scholis/orsum-inflandi/maintainability)
+![License](https://img.shields.io/github/license/orsa-scholis/orsum-inflandi.svg) ![Repo size](https://img.shields.io/github/repo-size/orsa-scholis/orsum-inflandi-II.svg)
+[![DeepScan grade](https://deepscan.io/api/teams/5605/projects/7437/branches/75399/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=5605&pid=7437&bid=75399)[![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
+[![BCH compliance](https://bettercodehub.com/edge/badge/orsa-scholis/orsum-inflandi?branch=develop)](https://bettercodehub.com/)
 
 Unnecessarily complicated and over-engineered 4 in a row game built with a Go server and React/TypeScript client server
 
