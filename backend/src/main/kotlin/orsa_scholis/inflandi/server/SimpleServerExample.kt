@@ -1,6 +1,6 @@
-package `is`.orsa_scholis.inflandi.server
+package orsa_scholis.inflandi.server
 
-import `is`.orsa_scholis.inflandi.data
+import orsa_scholis.inflandi.data
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.nio.ByteBuffer
