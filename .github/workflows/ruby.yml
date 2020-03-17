@@ -1,6 +1,9 @@
-name: Ruby
+name: Ruby CLI CI
 
-on: [push]
+on:
+  push:
+    paths:
+    - "cli/**"
 
 jobs:
   build:
