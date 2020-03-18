@@ -22,6 +22,6 @@ jobs:
     - name: Build and test with Rake
       run: |
         cd cli
-         gem install bundler:$(tail -1 Gemfile.lock | sed -e 's/^[[:space:]]*//')
+        gem install bundler:$(tail -1 Gemfile.lock | sed -e 's/^[[:space:]]*//')
         bundle install --jobs 4 --retry 3
         bundle exec rubocop
