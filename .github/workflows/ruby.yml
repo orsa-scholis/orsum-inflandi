@@ -4,7 +4,7 @@ on:
   push:
     paths:
     - "cli/**"
-    - ".github/**"
+    - ".github/workflow/ruby.yml"
 
 jobs:
   build:
@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Load Ruby version
-      run: echo "##[set-output name=RUBYV;]${$(cat .ruby-version):0:4}"
+      run: echo "##[set-output name=RUBYV;]$(cat .ruby-version | cut -c1-3 )"
       id: rnv
     - name: Set up Ruby
       uses: actions/setup-ruby@v1
