@@ -4,7 +4,7 @@ on:
   push:
     paths:
     - "cli/**"
-    - ".github/workflow/ruby.yml"
+    - ".github/workflows/ruby.yml"
 
 jobs:
   build:
