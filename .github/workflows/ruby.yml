@@ -4,6 +4,7 @@ on:
   push:
     paths:
     - "cli/**"
+    - ".github/workflows/ruby.yml"
 
 jobs:
   build:
@@ -12,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Load Ruby version
-      run: echo "##[set-output name=RUBYV;]$(cat .ruby-version)"
+      run: echo "##[set-output name=RUBYV;]$(cat .ruby-version | cut -c1-3 )"
       id: rnv
     - name: Set up Ruby
       uses: actions/setup-ruby@v1
@@ -21,6 +22,6 @@ jobs:
     - name: Build and test with Rake
       run: |
         cd cli
-        gem install bundler
+        gem install bundler -v "$(tail -1 Gemfile.lock | sed -e 's/^[[:space:]]*//')"
         bundle install --jobs 4 --retry 3
         bundle exec rubocop
