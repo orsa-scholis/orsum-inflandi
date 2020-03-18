@@ -4,6 +4,7 @@ on:
   push:
     paths:
     - "cli/**"
+    - ".github/**"
 
 jobs:
   build:
