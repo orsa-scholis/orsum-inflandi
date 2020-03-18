@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Load Ruby version
-      run: echo "##[set-output name=RUBYV;]$(cat .ruby-version)"
+      run: echo "##[set-output name=RUBYV;]${$(cat .ruby-version):0:4}"
       id: rnv
     - name: Set up Ruby
       uses: actions/setup-ruby@v1
