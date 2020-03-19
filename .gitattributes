@@ -1,2 +1,3 @@
 man/* linguist-documentation=false
 proto/* linguist-documentation=false
+cli/sorbet/rbi/**/* linguist-vendored
