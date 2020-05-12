@@ -59,7 +59,7 @@
     "react-router-dom": "^5.0.0",
     "tslib": "^1.4.0",
     "typeface-roboto": "^0.0.75",
-    "uuid": "^7.0.0"
+    "uuid": "^8.0.0"
   },
   "devDependencies": {
     "@material-ui/core": "4.9.10",
