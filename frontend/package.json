@@ -57,7 +57,7 @@
     "react-dom": "^16.6.3",
     "react-hot-loader": "^4.3.12",
     "react-router-dom": "^5.0.0",
-    "tslib": "^1.4.0",
+    "tslib": "^2.0.0",
     "typeface-roboto": "^0.0.75",
     "uuid": "^8.0.0"
   },
