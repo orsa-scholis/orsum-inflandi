@@ -20,7 +20,7 @@ jobs:
           private_key: ${{ secrets.PR_TOKEN_APP_PRIVATE_KEY }}
           
     - name: Replace Ruby version in Gemfiles
-      run: find . -type f -name "Gemfile" -print0 | xargs -0 -n1 -I @ bash -c "sed -i \"s/ruby '[0-9].[0-9].[0-9]'/ruby '${{ github.event.inputs.projectName }}'/g\" @"
+      run: find . -type f -name "Gemfile" -print0 | xargs -0 -n1 -I @ bash -c "sed -i \"s/ruby '[0-9].[0-9].[0-9]'/ruby '${{ github.event.inputs.rubyVersion }}'/g\" @"
       
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v2
