@@ -1,4 +1,4 @@
-name: Ruby CLI CI
+name: Ruby Version Updater
 
 on:
   workflow_dispatch:
