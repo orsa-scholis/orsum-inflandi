@@ -68,10 +68,10 @@
     "@types/google-protobuf": "3.7.2",
     "@types/prop-types": "15.7.3",
     "@types/react": "16.9.46",
-    "@types/react-dom": "16.9.6",
+    "@types/react-dom": "16.9.8",
     "@types/react-router": "5.1.8",
     "@types/react-router-dom": "5.1.4",
-    "@types/uuid": "8.0.0",
+    "@types/uuid": "8.0.1",
     "babel-plugin-transform-async-to-generator": "6.24.1",
     "babel-preset-env": "1.7.0",
     "babel-preset-react": "6.24.1",
@@ -80,6 +80,6 @@
     "husky": "4.2.5",
     "ts-protoc-gen": "0.12.0",
     "tslint": "6.1.2",
-    "typescript": "3.9.6"
+    "typescript": "3.9.7"
   }
 }
